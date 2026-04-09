@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "pyro",
+	"version": "${version}",
+	"name": "Pyro",
+	"description": "Light things up with explosive pyrotechnics—Molotovs, dynamite, and pure chaos.",
+	"authors": [
+		"LucasErrNotFound"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/pyro/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.yukimura.pyro.Pyro"
+		],
+		"client": [
+			"com.yukimura.pyro.client.PyroClient"
+		],
+		"fabric-datagen": [
+			"com.yukimura.pyro.client.PyroDataGenerator"
+		]
+	},
+	"mixins": [
+		"pyro.mixins.json",
+		{
+			"config": "pyro.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.6",
+		"minecraft": "~26.1",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
