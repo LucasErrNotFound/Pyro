@@ -20,11 +20,11 @@ public class DynamiteEntity extends ThrowableProjectile {
     }
 
     public DynamiteEntity(EntityType<? extends ThrowableProjectile> type, Level level) {
-        super(type, level);
+        super(PyroEntities.DYNAMITE_ENTITY, level);
     }
 
     public DynamiteEntity(EntityType<? extends ThrowableProjectile> type, double x, double y, double z, Level level) {
-        super(EntityType.SNOWBALL, x, y, z, level);
+        super(PyroEntities.DYNAMITE_ENTITY, x, y, z, level);
     }
 
     @Override
