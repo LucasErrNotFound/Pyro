@@ -14,8 +14,8 @@ import java.util.function.Function;
 
 public class PyroItems {
 
-    public static final Item DYNAMITE_ITEM = registerItem(
-        "dynamite_item",
+    public static final Item DYNAMITE = registerItem(
+        "dynamite",
         DynamiteItem::new,
         new Item.Properties()
             .stacksTo(16)
@@ -31,7 +31,7 @@ public class PyroItems {
 
     public static void initialize() {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(itemGroup -> {
-            itemGroup.accept(DYNAMITE_ITEM);
+            itemGroup.accept(DYNAMITE);
         });
     }
 }
