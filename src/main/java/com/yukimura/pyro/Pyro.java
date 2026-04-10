@@ -1,5 +1,6 @@
 package com.yukimura.pyro;
 
+import com.yukimura.pyro.item.PyroItems;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -13,5 +14,7 @@ public class Pyro implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Hello Fabric world!");
+
+		PyroItems.initialize();
 	}
 }
