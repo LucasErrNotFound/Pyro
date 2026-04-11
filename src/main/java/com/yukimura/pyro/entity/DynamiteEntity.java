@@ -4,8 +4,10 @@ import com.yukimura.pyro.item.PyroItems;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -48,14 +50,42 @@ public class DynamiteEntity extends ThrowableItemProjectile {
     @Override
     protected void onHitEntity(EntityHitResult hitResult) {
         super.onHitEntity(hitResult);
-        this.discard();
-        this.level().explode(this, getX(), getY(), getZ(), 2.3f, Level.ExplosionInteraction.TNT);
+        if (!level().isClientSide() && hitResult.getEntity() instanceof Player player) {
+            player.hurt(level().damageSources().explosion(this, this.getOwner()), Float.MAX_VALUE);
+        }
+        explodeWithReducedDamage();
     }
 
     @Override
     protected void onHit(HitResult hitResult) {
+        if (hitResult.getType() == HitResult.Type.ENTITY) {
+            super.onHit(hitResult);
+            return;
+        }
         super.onHit(hitResult);
+        explodeWithReducedDamage();
+    }
+
+    private void explodeWithReducedDamage() {
+        float blastRadius  = 2.3f;  // block destruction radius — keep in sync with visuals
+        float damageRadius = 4.0f;  // how far the blast hurts entities (blocks)
+        float maxDamage    = 6.0f;  // damage at point-blank (3 hearts)
+
+        if (!level().isClientSide()) {
+            DamageSource damageSource = level().damageSources().explosion(this, this.getOwner());
+            level().getEntitiesOfClass(
+                LivingEntity.class,
+                this.getBoundingBox().inflate(damageRadius)
+            ).forEach(entity -> {
+                double distance = entity.distanceTo(this);
+                if (distance < damageRadius) {
+                    float scaled = (float) (1.0 - distance / damageRadius) * maxDamage;
+                    entity.hurt(damageSource, scaled);
+                }
+            });
+        }
+
         this.discard();
-        this.level().explode(this, getX(), getY(), getZ(), 2.3f, Level.ExplosionInteraction.TNT);
+        level().explode(this, getX(), getY(), getZ(), blastRadius, Level.ExplosionInteraction.BLOCK);
     }
 }
