@@ -1,5 +1,6 @@
 package com.yukimura.pyro;
 
+import com.yukimura.pyro.entity.PyroEntities;
 import com.yukimura.pyro.item.PyroItems;
 import net.fabricmc.api.ModInitializer;
 
@@ -16,5 +17,6 @@ public class Pyro implements ModInitializer {
 		LOGGER.info("Hello Fabric world!");
 
 		PyroItems.initialize();
+		PyroEntities.registerPyroEntityTypes();
 	}
 }
