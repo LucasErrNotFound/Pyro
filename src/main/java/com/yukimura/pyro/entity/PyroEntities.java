@@ -23,7 +23,7 @@ public class PyroEntities {
         return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
     }
 
-    public static void registerModEntityTypes() {
+    public static void registerPyroEntityTypes() {
         Pyro.LOGGER.info("Registering EntityTypes for " + Pyro.MOD_ID);
     }
 
