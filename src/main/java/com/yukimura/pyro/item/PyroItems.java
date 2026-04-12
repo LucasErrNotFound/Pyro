@@ -21,6 +21,13 @@ public class PyroItems {
             .stacksTo(16)
     );
 
+    public static final Item LIT_DYNAMITE = registerItem(
+        "lit_dynamite",
+        IgnitedDynamiteItem::new,
+        new Item.Properties()
+            .stacksTo(1)
+    );
+
     public static <T extends Item> T registerItem(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings) {
         ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Pyro.MOD_ID, name));
         T item = itemFactory.apply(settings.setId(itemKey));

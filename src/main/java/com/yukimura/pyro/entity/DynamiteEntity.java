@@ -17,12 +17,16 @@ import net.minecraft.world.phys.HitResult;
 
 public class DynamiteEntity extends ThrowableItemProjectile {
 
+    private static final int FUSE_TICKS = 80;
+    private int fuseTicks = FUSE_TICKS;
+    private boolean inGround = false;
+
     // Factory constructor — used by EntityType.Builder.of(DynamiteEntity::new, ...)
     public DynamiteEntity(EntityType<? extends DynamiteEntity> type, Level level) {
         super(type, level);
     }
 
-    // Throw constructor — used by DynamiteItem via Projectile.spawnProjectileFromRotation
+    // Throw constructor — used by IgnitedDynamiteItem via Projectile.spawnProjectileFromRotation
     public DynamiteEntity(Level level, LivingEntity owner, ItemStack stack) {
         super(PyroEntities.DYNAMITE_ENTITY, owner, level, stack);
     }
@@ -48,6 +52,16 @@ public class DynamiteEntity extends ThrowableItemProjectile {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        // After super.tick() may apply gravity; re-zero velocity if already stuck
+        if (inGround) setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        if (!level().isClientSide()) {
+            if (--fuseTicks <= 0) explodeWithReducedDamage();
+        }
+    }
+
+    @Override
     protected void onHitEntity(EntityHitResult hitResult) {
         super.onHitEntity(hitResult);
         if (!level().isClientSide() && hitResult.getEntity() instanceof Player player) {
@@ -62,8 +76,11 @@ public class DynamiteEntity extends ThrowableItemProjectile {
             super.onHit(hitResult);
             return;
         }
-        super.onHit(hitResult);
-        explodeWithReducedDamage();
+        // Block hit: halt the projectile and let the fuse handle the explosion
+        if (!inGround) {
+            inGround = true;
+            setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        }
     }
 
     private void explodeWithReducedDamage() {
