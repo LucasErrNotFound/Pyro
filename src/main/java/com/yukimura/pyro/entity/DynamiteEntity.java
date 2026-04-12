@@ -1,5 +1,6 @@
 package com.yukimura.pyro.entity;
 
+import com.yukimura.pyro.item.DynamiteItem;
 import com.yukimura.pyro.item.PyroItems;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -26,9 +27,13 @@ public class DynamiteEntity extends ThrowableItemProjectile {
         super(type, level);
     }
 
-    // Throw constructor — used by IgnitedDynamiteItem via Projectile.spawnProjectileFromRotation
+    // Throw constructor — used by DynamiteItem via Projectile.spawnProjectileFromRotation
     public DynamiteEntity(Level level, LivingEntity owner, ItemStack stack) {
         super(PyroEntities.DYNAMITE_ENTITY, owner, level, stack);
+        // Continue counting from however much fuse remains on the item
+        if (DynamiteItem.isIgnited(stack)) {
+            this.fuseTicks = DynamiteItem.getFuseTicks(stack);
+        }
     }
 
     @Override

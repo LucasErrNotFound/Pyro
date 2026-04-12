@@ -18,13 +18,6 @@ public class PyroItems {
         "dynamite",
         DynamiteItem::new,
         new Item.Properties()
-            .stacksTo(16)
-    );
-
-    public static final Item LIT_DYNAMITE = registerItem(
-        "lit_dynamite",
-        IgnitedDynamiteItem::new,
-        new Item.Properties()
             .stacksTo(1)
     );
 
