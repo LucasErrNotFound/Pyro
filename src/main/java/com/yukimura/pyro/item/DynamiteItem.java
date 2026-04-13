@@ -4,6 +4,7 @@ import com.yukimura.pyro.entity.DynamiteEntity;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -125,5 +126,8 @@ public class DynamiteItem extends Item {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         tag.putLong(IGNITE_TIME_TAG, level.getGameTime());
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        // Signal the item model to switch to the "lit" variant (dynamite_lit.json)
+        stack.set(DataComponents.CUSTOM_MODEL_DATA,
+            new CustomModelData(java.util.List.of(1.0f), java.util.List.of(), java.util.List.of(), java.util.List.of()));
     }
 }

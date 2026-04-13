@@ -4,7 +4,9 @@
 	"compatibilityLevel": "JAVA_25",
 	"client": [
 		"ExampleClientMixin",
-		"MixinItemInHandRenderer"
+		"MixinItemInHandRenderer",
+		"MixinThrownItemRenderState",
+		"MixinThrownItemRenderer"
 	],
 	"injectors": {
 		"defaultRequire": 1
