@@ -23,7 +23,7 @@ public class PyroItems {
 
     public static final Item FUSE = registerItem(
         "fuse",
-        Item::new,
+        FuseItem::new,
         new Item.Properties()
     );
 
