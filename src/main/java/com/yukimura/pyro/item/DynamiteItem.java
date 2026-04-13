@@ -24,7 +24,7 @@ public class DynamiteItem extends Item {
 
     private static final int FUSE_TICKS = 80;
     private static final int THROW_COOLDOWN = 40;
-    static final String FUSE_TAG = "fuseTicks";
+    static final String IGNITE_TIME_TAG = "igniteTime";
 
     public DynamiteItem(Properties properties) {
         super(properties);
@@ -65,7 +65,9 @@ public class DynamiteItem extends Item {
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
             SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, 1.0F, 1.0F);
 
-        setFuseTicks(stack, FUSE_TICKS);
+        if (level instanceof ServerLevel serverLevel) {
+            setIgnited(stack, serverLevel);
+        }
 
         player.awardStat(Stats.ITEM_USED.get(this));
         return InteractionResult.SUCCESS;
@@ -76,11 +78,8 @@ public class DynamiteItem extends Item {
         super.inventoryTick(stack, level, entity, slot);
         if (!isIgnited(stack)) return;
 
-        int remaining = getFuseTicks(stack) - 1;
-        if (remaining > 0) {
-            setFuseTicks(stack, remaining);
-            return;
-        }
+        long elapsed = level.getGameTime() - getIgniteTime(stack);
+        if (elapsed < FUSE_TICKS) return;
 
         // ── FUSE EXPIRED: explode at the holder's position ────────────────────
         float blastRadius = 2.3f;
@@ -102,31 +101,29 @@ public class DynamiteItem extends Item {
             }
         });
 
-        // Consume the entire remaining stack — prevents repeat explosions next tick
-        // if somehow count > 1 (e.g. creative mode ignition).
+        // Consume the entire remaining stack — prevents repeat explosions next tick.
         stack.setCount(0);
         level.explode(entity, entity.getX(), entity.getY(), entity.getZ(),
             blastRadius, Level.ExplosionInteraction.BLOCK);
     }
 
-    @Override
-    public boolean isFoil(ItemStack stack) {
-        return isIgnited(stack);
-    }
-
     public static boolean isIgnited(ItemStack stack) {
         return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-            .copyTag().contains(FUSE_TAG);
+            .copyTag().contains(IGNITE_TIME_TAG);
     }
 
-    public static int getFuseTicks(ItemStack stack) {
+    public static long getIgniteTime(ItemStack stack) {
         return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-            .copyTag().getInt(FUSE_TAG).orElse(0);
+            .copyTag().getLong(IGNITE_TIME_TAG).orElse(0L);
     }
 
-    static void setFuseTicks(ItemStack stack, int ticks) {
+    public static int getRemainingTicks(ItemStack stack, long currentGameTime) {
+        return (int) Math.max(1, FUSE_TICKS - (currentGameTime - getIgniteTime(stack)));
+    }
+
+    static void setIgnited(ItemStack stack, ServerLevel level) {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        tag.putInt(FUSE_TAG, ticks);
+        tag.putLong(IGNITE_TIME_TAG, level.getGameTime());
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
     }
 }

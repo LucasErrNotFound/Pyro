@@ -32,7 +32,7 @@ public class DynamiteEntity extends ThrowableItemProjectile {
         super(PyroEntities.DYNAMITE_ENTITY, owner, level, stack);
         // Continue counting from however much fuse remains on the item
         if (DynamiteItem.isIgnited(stack)) {
-            this.fuseTicks = DynamiteItem.getFuseTicks(stack);
+            this.fuseTicks = DynamiteItem.getRemainingTicks(stack, level.getGameTime());
         }
     }
 
