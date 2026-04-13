@@ -17,6 +17,6 @@ public class Pyro implements ModInitializer {
 		LOGGER.info("Hello Fabric world!");
 
 		PyroItems.initialize();
-		PyroEntities.registerPyroEntityTypes();
+		PyroEntities.initialize();
 	}
 }

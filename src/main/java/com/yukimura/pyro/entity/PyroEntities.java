@@ -23,11 +23,7 @@ public class PyroEntities {
         return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
     }
 
-    public static void registerPyroEntityTypes() {
+    public static void initialize() {
         Pyro.LOGGER.info("Registering EntityTypes for " + Pyro.MOD_ID);
-    }
-
-    public static void registerAttributes() {
-        // FabricDefaultAttributeRegistry.register(DYNAMITE_ENTITY, DynamiteEntity.);
     }
 }
