@@ -3,10 +3,7 @@
 	"package": "com.yukimura.pyro.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"ExampleClientMixin",
-		"MixinItemInHandRenderer",
-		"MixinThrownItemRenderState",
-		"MixinThrownItemRenderer"
+		"ExampleClientMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
