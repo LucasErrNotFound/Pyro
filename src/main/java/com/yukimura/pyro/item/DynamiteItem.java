@@ -1,8 +1,10 @@
 package com.yukimura.pyro.item;
 
 import com.yukimura.pyro.entity.DynamiteEntity;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.sounds.SoundEvents;
@@ -18,8 +20,12 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
+
+import java.util.function.Consumer;
 
 public class DynamiteItem extends Item {
 
@@ -29,6 +35,11 @@ public class DynamiteItem extends Item {
 
     public DynamiteItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> add, TooltipFlag flag) {
+        add.accept(Component.translatable("tooltip.pyro.dynamite").withStyle(ChatFormatting.GOLD));
     }
 
     @Override

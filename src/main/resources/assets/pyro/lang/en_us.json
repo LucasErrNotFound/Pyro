@@ -1,4 +1,6 @@
 {
   "item.pyro.dynamite": "Dynamite",
-  "item.pyro.fuse": "Fuse"
+  "item.pyro.fuse": "Fuse",
+  "tooltip.pyro.dynamite": "Right-click with a torch to ignite.",
+  "tooltip.pyro.fuse": "A slow-burning cord used to ignite explosives."
 }
