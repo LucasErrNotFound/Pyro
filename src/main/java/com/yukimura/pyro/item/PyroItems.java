@@ -21,6 +21,12 @@ public class PyroItems {
             .stacksTo(1)
     );
 
+    public static final Item FUSE = registerItem(
+        "fuse",
+        Item::new,
+        new Item.Properties()
+    );
+
     public static <T extends Item> T registerItem(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings) {
         ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Pyro.MOD_ID, name));
         T item = itemFactory.apply(settings.setId(itemKey));
@@ -32,6 +38,7 @@ public class PyroItems {
     public static void initialize() {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(itemGroup -> {
             itemGroup.accept(DYNAMITE);
+            itemGroup.accept(FUSE);
         });
     }
 }
