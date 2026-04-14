@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:gunpowder",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "pyro:fuse",
+    "count": 3
+  }
+}

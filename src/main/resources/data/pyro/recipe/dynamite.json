@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "#S#",
+    "RBR"
+  ],
+  "key": {
+    "X": "pyro:fuse",
+    "#": "minecraft:gunpowder",
+    "S": "minecraft:sand",
+    "R": "minecraft:red_dye",
+    "B": "minecraft:bamboo"
+  },
+  "result": {
+    "id": "pyro:dynamite",
+    "count": 1
+  }
+}
