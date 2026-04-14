@@ -70,7 +70,7 @@ public class DynamiteItem extends Item {
 
         // ── IGNITE ────────────────────────────────────────────────────────────
         ItemStack offhand = player.getItemInHand(InteractionHand.OFF_HAND);
-        if (!offhand.is(Items.TORCH) && !offhand.is(Items.REDSTONE_TORCH)) {
+        if (!offhand.is(Items.TORCH) && !offhand.is(Items.REDSTONE_TORCH) && !offhand.is(Items.SOUL_TORCH) && !offhand.is(Items.COPPER_TORCH)) {
             return InteractionResult.PASS;
         }
 
