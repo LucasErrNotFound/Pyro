@@ -23,7 +23,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.function.Consumer;
 
@@ -44,8 +49,6 @@ public class DynamiteItem extends Item {
 
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
-
         ItemStack stack = player.getItemInHand(hand);
 
         if (isIgnited(stack)) {
@@ -69,7 +72,8 @@ public class DynamiteItem extends Item {
         }
 
         // ── IGNITE ────────────────────────────────────────────────────────────
-        ItemStack offhand = player.getItemInHand(InteractionHand.OFF_HAND);
+        InteractionHand otherHand = (hand == InteractionHand.MAIN_HAND) ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+        ItemStack offhand = player.getItemInHand(otherHand);
         if (!offhand.is(Items.TORCH) && !offhand.is(Items.REDSTONE_TORCH) && !offhand.is(Items.SOUL_TORCH) && !offhand.is(Items.COPPER_TORCH)) {
             return InteractionResult.PASS;
         }
@@ -84,6 +88,33 @@ public class DynamiteItem extends Item {
         }
 
         player.awardStat(Stats.ITEM_USED.get(this));
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        ItemStack stack = context.getItemInHand();
+        if (isIgnited(stack)) return InteractionResult.PASS;
+
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        BlockState blockState = level.getBlockState(pos);
+
+        if (!blockState.is(BlockTags.CAMPFIRES)) return InteractionResult.PASS;
+        if (!blockState.getValue(BlockStateProperties.LIT)) return InteractionResult.PASS;
+
+        level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+            SoundEvents.FLINTANDSTEEL_USE, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+            SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, 1.0F, 1.0F);
+
+        if (level instanceof ServerLevel serverLevel) {
+            setIgnited(stack, serverLevel);
+        }
+
+        Player player = context.getPlayer();
+        if (player != null) player.awardStat(Stats.ITEM_USED.get(this));
+
         return InteractionResult.SUCCESS;
     }
 
