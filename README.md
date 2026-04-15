@@ -56,7 +56,7 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 
 ## Igniting Dynamite
 
-### With a Torch (Off-hand)
+### With a Torch (Off-hand or Main-hand)
 
 ![Supported torch varieties](docs/torch_varieties.png)
 
