@@ -132,9 +132,9 @@ public class DynamiteItem extends Item {
         if (elapsed < FUSE_TICKS) return;
 
         // ── FUSE EXPIRED: explode at the holder's position ────────────────────
-        float blastRadius = 2.3f;
-        float damageRadius = 4.0f;
-        float maxDamage = 6.0f;
+        float blastRadius = 2.5f;
+        float damageRadius = 5.0f;
+        float maxDamage = 15.0f;
 
         if (entity instanceof Player holder) {
             holder.hurt(level.damageSources().explosion(null, null), Float.MAX_VALUE);

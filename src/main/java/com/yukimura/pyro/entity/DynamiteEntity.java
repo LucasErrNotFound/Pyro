@@ -8,7 +8,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -69,10 +68,11 @@ public class DynamiteEntity extends ThrowableItemProjectile {
     @Override
     protected void onHitEntity(EntityHitResult hitResult) {
         super.onHitEntity(hitResult);
-        if (!level().isClientSide() && hitResult.getEntity() instanceof Player player) {
-            player.hurt(level().damageSources().explosion(this, this.getOwner()), Float.MAX_VALUE);
+        // Stop on entity hit and let the fuse timer in tick() handle the explosion
+        if (!inGround) {
+            inGround = true;
+            setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
         }
-        explodeWithReducedDamage();
     }
 
     @Override
@@ -89,9 +89,9 @@ public class DynamiteEntity extends ThrowableItemProjectile {
     }
 
     private void explodeWithReducedDamage() {
-        float blastRadius  = 2.3f;  // block destruction radius — keep in sync with visuals
-        float damageRadius = 4.0f;  // how far the blast hurts entities (blocks)
-        float maxDamage    = 6.0f;  // damage at point-blank (3 hearts)
+        float blastRadius  = 2.8f;   // block destruction radius
+        float damageRadius = 5.0f;   // how far the blast hurts entities (blocks)
+        float maxDamage    = 15.0f;  // damage at point-blank (~7.5 hearts, survivable on full health)
 
         if (!level().isClientSide()) {
             DamageSource damageSource = level().damageSources().explosion(this, this.getOwner());
