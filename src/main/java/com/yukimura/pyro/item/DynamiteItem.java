@@ -68,7 +68,7 @@ public class DynamiteItem extends Item {
             // Always consume on throw — in creative the slot is restored from the menu.
             // Without this, the item stays in hand with fuseTicks set and explodes there too.
             // Yea this is necessary to prevent double explosion for both creative and survival mode
-            // Unless there is a way of fixing this
+            // Unless there is a way of fixing this, sorry guys
             stack.shrink(1);
             player.awardStat(Stats.ITEM_USED.get(this));
             return InteractionResult.SUCCESS;
@@ -173,8 +173,6 @@ public class DynamiteItem extends Item {
 
     private static boolean isHeatSourceAdjacentOrAt(Level level, BlockState clicked, BlockPos pos, Direction clickedFace) {
         if (isFireOrLava(clicked)) return true;
-        // Lava is transparent to raycasts — the hit lands on the block behind it,
-        // with clickedFace pointing back toward the lava. Only match that one face.
         return level.getBlockState(pos.relative(clickedFace)).getFluidState().is(FluidTags.LAVA);
     }
 
