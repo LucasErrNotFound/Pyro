@@ -24,9 +24,12 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
@@ -100,8 +103,10 @@ public class DynamiteItem extends Item {
         BlockPos pos = context.getClickedPos();
         BlockState blockState = level.getBlockState(pos);
 
-        if (!blockState.is(BlockTags.CAMPFIRES)) return InteractionResult.PASS;
-        if (!blockState.getValue(BlockStateProperties.LIT)) return InteractionResult.PASS;
+        boolean isCampfire = blockState.is(BlockTags.CAMPFIRES)
+                && blockState.getValue(BlockStateProperties.LIT);
+        boolean isHeatSource = isHeatSourceAdjacentOrAt(level, blockState, pos, context.getClickedFace());
+        if (!isCampfire && !isHeatSource) return InteractionResult.PASS;
 
         level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
             SoundEvents.FLINTANDSTEEL_USE, SoundSource.NEUTRAL, 1.0F, 1.0F);
@@ -164,6 +169,18 @@ public class DynamiteItem extends Item {
 
     public static int getRemainingTicks(ItemStack stack, long currentGameTime) {
         return (int) Math.max(1, FUSE_TICKS - (currentGameTime - getIgniteTime(stack)));
+    }
+
+    private static boolean isHeatSourceAdjacentOrAt(Level level, BlockState clicked, BlockPos pos, Direction clickedFace) {
+        if (isFireOrLava(clicked)) return true;
+        // Lava is transparent to raycasts — the hit lands on the block behind it,
+        // with clickedFace pointing back toward the lava. Only match that one face.
+        return level.getBlockState(pos.relative(clickedFace)).getFluidState().is(FluidTags.LAVA);
+    }
+
+    private static boolean isFireOrLava(BlockState state) {
+        return state.getBlock() instanceof BaseFireBlock
+                || state.getFluidState().is(FluidTags.LAVA);
     }
 
     static void setIgnited(ItemStack stack, ServerLevel level) {

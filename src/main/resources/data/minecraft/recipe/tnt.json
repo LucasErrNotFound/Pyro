@@ -1,0 +1,24 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:not",
+      "value": {
+        "condition": "fabric:all_mods_loaded",
+        "values": ["fabricloader"]
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GSG",
+    "SGS",
+    "GSG"
+  ],
+  "key": {
+    "G": "minecraft:gunpowder",
+    "S": "minecraft:sand"
+  },
+  "result": {
+    "id": "minecraft:tnt"
+  }
+}
