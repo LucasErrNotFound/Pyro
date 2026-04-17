@@ -9,7 +9,7 @@
   "key": {
     "X": "pyro:fuse",
     "#": "minecraft:gunpowder",
-    "S": "minecraft:sand",
+    "S": "minecraft:red_sand",
     "R": "minecraft:red_dye",
     "B": "minecraft:bamboo"
   },
