@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_red_sand": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "minecraft:red_sand"}]
+      }
+    },
+    "has_gunpowder": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "minecraft:gunpowder"}]
+      }
+    },
+    "has_bamboo": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "minecraft:bamboo"}]
+      }
+    },
+    "has_fuse": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "pyro:fuse"}]
+      }
+    }
+  },
+  "requirements": [["has_red_sand", "has_gunpowder", "has_bamboo", "has_fuse"]],
+  "rewards": {
+    "recipes": ["pyro:dynamite_red_sand"]
+  }
+}

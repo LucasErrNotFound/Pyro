@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_dynamite": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "pyro:dynamite"}]
+      }
+    }
+  },
+  "requirements": [["has_dynamite"]],
+  "rewards": {
+    "recipes": ["pyro:tnt"]
+  }
+}

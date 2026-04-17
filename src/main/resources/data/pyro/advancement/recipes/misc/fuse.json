@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_gunpowder": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "minecraft:gunpowder"}]
+      }
+    },
+    "has_string": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "minecraft:string"}]
+      }
+    }
+  },
+  "requirements": [["has_gunpowder", "has_string"]],
+  "rewards": {
+    "recipes": ["pyro:fuse"]
+  }
+}
