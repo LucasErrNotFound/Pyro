@@ -10,6 +10,10 @@
 ![Fabric](https://img.shields.io/badge/Fabric%20Loader-0.18.6-blue)
 ![Java](https://img.shields.io/badge/Java-25-orange)
 
+[![fapi-badge](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg)](https://modrinth.com/mod/fabric-api)
+
+[![modrinth-badge](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/modrinth_vector.svg)](https://modrinth.com/mod/pyros)
+
 </div>
 
 ---
