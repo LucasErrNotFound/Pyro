@@ -18,7 +18,7 @@ public class PyroItems {
         "dynamite",
         DynamiteItem::new,
         new Item.Properties()
-            .stacksTo(1)
+            .stacksTo(16)
     );
 
     public static final Item FUSE = registerItem(

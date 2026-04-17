@@ -65,11 +65,11 @@ public class DynamiteItem extends Item {
                     DynamiteEntity::new, (ServerLevel) level, stack, player, 0.0F, 1.5F, 1.0F);
                 player.getCooldowns().addCooldown(stack, THROW_COOLDOWN);
             }
-            // Always consume on throw — in creative the slot is restored from the menu.
-            // Without this, the item stays in hand with fuseTicks set and explodes there too.
-            // Yea this is necessary to prevent double explosion for both creative and survival mode
-            // Unless there is a way of fixing this, sorry guys
+
             stack.shrink(1);
+            if (!stack.isEmpty()) {
+                clearIgnited(stack);
+            }
             player.awardStat(Stats.ITEM_USED.get(this));
             return InteractionResult.SUCCESS;
         }
@@ -179,6 +179,17 @@ public class DynamiteItem extends Item {
     private static boolean isFireOrLava(BlockState state) {
         return state.getBlock() instanceof BaseFireBlock
                 || state.getFluidState().is(FluidTags.LAVA);
+    }
+
+    static void clearIgnited(ItemStack stack) {
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.remove(IGNITE_TIME_TAG);
+        if (tag.isEmpty()) {
+            stack.remove(DataComponents.CUSTOM_DATA);
+        } else {
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        }
+        stack.remove(DataComponents.CUSTOM_MODEL_DATA);
     }
 
     static void setIgnited(ItemStack stack, ServerLevel level) {
