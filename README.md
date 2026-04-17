@@ -34,7 +34,7 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 - **4-second fuse** (80 ticks) counts down whether the dynamite is in your hand or mid-air
 - Lands on the ground and detonates after the fuse expires — perfect for timed demolitions
 - Hold it too long and it **detonates in your inventory** — instant kill for the holder, splash damage to nearby players and mobs
-- Blast radius of **2.3 blocks** for block destruction; damage reaches out to **4 blocks**, scaling with distance
+- Blast radius of **2.5 blocks** for block destruction; damage reaches out to **5 blocks**, scaling with distance
 
 ---
 
