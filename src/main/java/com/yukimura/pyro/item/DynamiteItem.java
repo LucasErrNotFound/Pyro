@@ -144,9 +144,9 @@ public class DynamiteItem extends Item {
         if (elapsed < FUSE_TICKS) return;
 
         // ── FUSE EXPIRED: explode at the holder's position ────────────────────
-        float blastRadius = 3.0f;
-        float damageRadius = 5.0f;
-        float maxDamage = 15.0f;
+        int stackCount = stack.getCount();
+        float damageRadius = 5.0f * stackCount;
+        float maxDamage = 15.0f * stackCount;
 
         if (entity instanceof Player holder) {
             holder.hurt(PyroDamageTypes.dynamiteSelf(level.registryAccess()), Float.MAX_VALUE);
@@ -165,10 +165,17 @@ public class DynamiteItem extends Item {
             }
         });
 
-        // Consume the entire remaining stack — prevents repeat explosions next tick.
         stack.setCount(0);
-        level.explode(entity, entity.getX(), entity.getY(), entity.getZ(),
-            blastRadius, Level.ExplosionInteraction.BLOCK);
+
+        double spread = (stackCount - 1) * 0.75;
+        for (int i = 0; i < stackCount; i++) {
+            double offsetX = i == 0 ? 0.0 : (level.getRandom().nextDouble() * 2.0 - 1.0) * spread;
+            double offsetY = i == 0 ? 0.0 : (level.getRandom().nextDouble() * 2.0 - 1.0) * spread * 0.4;
+            double offsetZ = i == 0 ? 0.0 : (level.getRandom().nextDouble() * 2.0 - 1.0) * spread;
+            level.explode(entity,
+                entity.getX() + offsetX, entity.getY() + offsetY, entity.getZ() + offsetZ,
+                4.0f, Level.ExplosionInteraction.BLOCK);
+        }
     }
 
     public static boolean isIgnited(ItemStack stack) {
