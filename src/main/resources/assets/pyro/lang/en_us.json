@@ -2,5 +2,11 @@
   "item.pyro.dynamite": "Dynamite",
   "item.pyro.fuse": "Fuse",
   "tooltip.pyro.dynamite": "Right-click with a torch to ignite.",
-  "tooltip.pyro.fuse": "A slow-burning cord used to ignite explosives."
+  "tooltip.pyro.fuse": "A slow-burning cord used to ignite explosives.",
+
+  "death.attack.pyro.dynamite": "%1$s was blown up by some dynamite",
+  "death.attack.pyro.dynamite.player": "%1$s was blown up by %2$s's dynamite",
+  "death.attack.pyro.dynamite_self": "%1$s forgot to throw the dynamite",
+  "death.attack.pyro.dynamite_direct": "%1$s was struck by a flying stick of dynamite",
+  "death.attack.pyro.dynamite_direct.player": "%1$s was struck by %2$s's thrown dynamite"
 }
