@@ -1,5 +1,6 @@
 package com.yukimura.pyro.item;
 
+import com.yukimura.pyro.damage.PyroDamageTypes;
 import com.yukimura.pyro.entity.DynamiteEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -12,6 +13,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,6 +32,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
@@ -76,10 +79,11 @@ public class DynamiteItem extends Item {
 
         // ── IGNITE ────────────────────────────────────────────────────────────
         InteractionHand otherHand = (hand == InteractionHand.MAIN_HAND) ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-        ItemStack offhand = player.getItemInHand(otherHand);
-        if (!offhand.is(Items.TORCH) && !offhand.is(Items.REDSTONE_TORCH) && !offhand.is(Items.SOUL_TORCH) && !offhand.is(Items.COPPER_TORCH)) {
-            return InteractionResult.PASS;
-        }
+        ItemStack otherHandStack = player.getItemInHand(otherHand);
+        boolean hasTorch     = otherHandStack.is(Items.TORCH) || otherHandStack.is(Items.REDSTONE_TORCH)
+                || otherHandStack.is(Items.SOUL_TORCH) || otherHandStack.is(Items.COPPER_TORCH);
+        boolean hasFireCharge = otherHandStack.is(Items.FIRE_CHARGE);
+        if (!hasTorch && !hasFireCharge) return InteractionResult.PASS;
 
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
             SoundEvents.FLINTANDSTEEL_USE, SoundSource.NEUTRAL, 1.0F, 1.0F);
@@ -88,6 +92,10 @@ public class DynamiteItem extends Item {
 
         if (level instanceof ServerLevel serverLevel) {
             setIgnited(stack, serverLevel);
+        }
+
+        if (hasFireCharge && !player.getAbilities().instabuild) {
+            otherHandStack.shrink(1);
         }
 
         player.awardStat(Stats.ITEM_USED.get(this));
@@ -102,11 +110,16 @@ public class DynamiteItem extends Item {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState blockState = level.getBlockState(pos);
+        Player player = context.getPlayer();
 
-        boolean isCampfire = blockState.is(BlockTags.CAMPFIRES)
+        boolean isCampfire   = blockState.is(BlockTags.CAMPFIRES)
                 && blockState.getValue(BlockStateProperties.LIT);
         boolean isHeatSource = isHeatSourceAdjacentOrAt(level, blockState, pos, context.getClickedFace());
-        if (!isCampfire && !isHeatSource) return InteractionResult.PASS;
+        boolean isFurnace    = isLitFurnace(blockState) && player != null && player.isShiftKeyDown();
+        boolean isCandle      = blockState.is(BlockTags.CANDLES)
+                && blockState.getValue(BlockStateProperties.LIT);
+        boolean isPlacedTorch = isAnyPlacedTorch(blockState);
+        if (!isCampfire && !isHeatSource && !isFurnace && !isCandle && !isPlacedTorch) return InteractionResult.PASS;
 
         level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
             SoundEvents.FLINTANDSTEEL_USE, SoundSource.NEUTRAL, 1.0F, 1.0F);
@@ -117,7 +130,6 @@ public class DynamiteItem extends Item {
             setIgnited(stack, serverLevel);
         }
 
-        Player player = context.getPlayer();
         if (player != null) player.awardStat(Stats.ITEM_USED.get(this));
 
         return InteractionResult.SUCCESS;
@@ -132,22 +144,24 @@ public class DynamiteItem extends Item {
         if (elapsed < FUSE_TICKS) return;
 
         // ── FUSE EXPIRED: explode at the holder's position ────────────────────
-        float blastRadius = 2.5f;
+        float blastRadius = 3.0f;
         float damageRadius = 5.0f;
         float maxDamage = 15.0f;
 
         if (entity instanceof Player holder) {
-            holder.hurt(level.damageSources().explosion(null, null), Float.MAX_VALUE);
+            holder.hurt(PyroDamageTypes.dynamiteSelf(level.registryAccess()), Float.MAX_VALUE);
         }
 
+        DamageSource nearbySource = PyroDamageTypes.dynamiteHolder(level.registryAccess(),
+                entity instanceof LivingEntity living ? living : null);
         level.getEntitiesOfClass(LivingEntity.class,
             entity.getBoundingBox().inflate(damageRadius)
         ).forEach(e -> {
-            if (e == entity) return; // owner already instakilled above
+            if (e == entity) return; // holder already killed above
             double distance = e.distanceTo(entity);
             if (distance < damageRadius) {
                 float scaled = (float) (1.0 - distance / damageRadius) * maxDamage;
-                e.hurt(level.damageSources().explosion(null, null), scaled);
+                e.hurt(nearbySource, scaled);
             }
         });
 
@@ -169,6 +183,20 @@ public class DynamiteItem extends Item {
 
     public static int getRemainingTicks(ItemStack stack, long currentGameTime) {
         return (int) Math.max(1, FUSE_TICKS - (currentGameTime - getIgniteTime(stack)));
+    }
+
+    private static boolean isAnyPlacedTorch(BlockState state) {
+        if (state.is(Blocks.REDSTONE_TORCH) || state.is(Blocks.REDSTONE_WALL_TORCH)) {
+            return state.getValue(BlockStateProperties.LIT);
+        }
+        return state.is(Blocks.TORCH)        || state.is(Blocks.WALL_TORCH)
+            || state.is(Blocks.SOUL_TORCH)   || state.is(Blocks.SOUL_WALL_TORCH)
+            || state.is(Blocks.COPPER_TORCH) || state.is(Blocks.COPPER_WALL_TORCH);
+    }
+
+    private static boolean isLitFurnace(BlockState state) {
+        return (state.is(Blocks.FURNACE) || state.is(Blocks.SMOKER) || state.is(Blocks.BLAST_FURNACE))
+                && state.getValue(BlockStateProperties.LIT);
     }
 
     private static boolean isHeatSourceAdjacentOrAt(Level level, BlockState clicked, BlockPos pos, Direction clickedFace) {
