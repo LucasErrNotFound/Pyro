@@ -1,5 +1,6 @@
 package com.yukimura.pyro.entity;
 
+import com.yukimura.pyro.damage.PyroDamageTypes;
 import com.yukimura.pyro.item.DynamiteItem;
 import com.yukimura.pyro.item.PyroItems;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -60,18 +61,30 @@ public class DynamiteEntity extends ThrowableItemProjectile {
         super.tick();
         // After super.tick() may apply gravity; re-zero velocity if already stuck
         if (inGround) setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
-        if (!level().isClientSide()) {
+        if (level().isClientSide()) {
+            spawnFuseParticles();
+        } else {
             if (--fuseTicks <= 0) explodeWithReducedDamage();
+        }
+    }
+
+    private void spawnFuseParticles() {
+        Level level = level();
+        level.addParticle(ParticleTypes.SMOKE, getX(), getY() + 0.15, getZ(), 0.0, 0.04, 0.0);
+        if (level.getRandom().nextInt(3) == 0) {
+            level.addParticle(ParticleTypes.SMALL_FLAME, getX(), getY() + 0.15, getZ(), 0.0, 0.02, 0.0);
         }
     }
 
     @Override
     protected void onHitEntity(EntityHitResult hitResult) {
         super.onHitEntity(hitResult);
-        // Stop on entity hit and let the fuse timer in tick() handle the explosion
         if (!inGround) {
             inGround = true;
             setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        }
+        if (!level().isClientSide() && hitResult.getEntity() instanceof LivingEntity target) {
+            target.hurt(PyroDamageTypes.dynamiteDirect(level().registryAccess(), this, this.getOwner()), 3.0f);
         }
     }
 
@@ -89,12 +102,12 @@ public class DynamiteEntity extends ThrowableItemProjectile {
     }
 
     private void explodeWithReducedDamage() {
-        float blastRadius  = 2.8f;   // block destruction radius
+        float blastRadius  = 3.0f;   // block destruction radius
         float damageRadius = 5.0f;   // how far the blast hurts entities (blocks)
         float maxDamage    = 15.0f;  // damage at point-blank (~7.5 hearts, survivable on full health)
 
         if (!level().isClientSide()) {
-            DamageSource damageSource = level().damageSources().explosion(this, this.getOwner());
+            DamageSource damageSource = PyroDamageTypes.dynamite(level().registryAccess(), this, this.getOwner());
             level().getEntitiesOfClass(
                 LivingEntity.class,
                 this.getBoundingBox().inflate(damageRadius)
