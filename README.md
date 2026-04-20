@@ -38,6 +38,17 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 
 ---
 
+### Stack-Scaled Inventory Explosion
+
+![Stack-scaled inventory explosion](docs/ultimate_explosion.gif)
+
+- Igniting dynamite without throwing it detonates the **entire stack** at once
+- Explosion radius, maximum damage, and number of sub-explosions all **scale with stack size**
+- Each sub-explosion is offset from the others, spreading blast force across a wider area
+- A full stack is far more lethal than a single stick — handle with care
+
+---
+
 ### Timed Fuse System
 
 ![Timed fuse system](docs/timed_fuse_system.gif)
@@ -99,6 +110,14 @@ Hold dynamite and **right-click directly on lava** to ignite it. Both source blo
 
 ---
 
+### Other Ignition Sources
+
+![Other ways to ignite dynamite](docs/different_ways_dynamite.gif)
+
+Dynamite can be ignited by right-clicking almost any open flame or active heat source in the world — torches, burning furnaces, lit candles, and more. If it's on fire, it can light a fuse.
+
+---
+
 ## Crafting Recipes
 
 ### Fuse
@@ -115,7 +134,7 @@ Hold dynamite and **right-click directly on lava** to ignite it. Both source blo
 
 ![Dynamite crafting recipe](docs/dynamite-crafting.png)
 
-Yields **1× Dynamite**.
+Yields **2× Dynamite**.
 
 ---
 
