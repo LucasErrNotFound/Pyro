@@ -112,7 +112,7 @@ Hold dynamite and **right-click directly on lava** to ignite it. Both source blo
 
 ### Other Ignition Sources
 
-![Other ways to ignite dynamite](docs/different_ways_dynamite.gif)
+![Other ways to ignite dynamite](docs/different_ways_dynamite.png)
 
 Dynamite can be ignited by right-clicking almost any open flame or active heat source in the world — torches, burning furnaces, lit candles, and more. If it's on fire, it can light a fuse.
 
