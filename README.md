@@ -31,8 +31,9 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 ![Throwable dynamite in action](docs/throwable_dynamite.gif)
 
 - Ignite dynamite with a torch or at a campfire, then throw it with right-click
-- **4-second fuse** (80 ticks) counts down whether the dynamite is in your hand or mid-air
+- **4-second fuse** (80 ticks) counts down whether the dynamite is in your hand, mid-air, or lying on the ground
 - Lands on the ground and detonates after the fuse expires — perfect for timed demolitions
+- **Drop it** on the ground and it still detonates when the fuse runs out — dropping clears the ignited state from any remaining dynamite in your hand so only the dropped piece explodes
 - Hold it too long and it **detonates in your inventory** — instant kill for the holder, splash damage to nearby players and mobs
 - Blast radius of **2.5 blocks** for block destruction; damage reaches out to **5 blocks**, scaling with distance
 
@@ -114,7 +115,7 @@ Hold dynamite and **right-click directly on lava** to ignite it. Both source blo
 
 ![Other ways to ignite dynamite](docs/different_ways_dynamite.png)
 
-Dynamite can be ignited by right-clicking almost any open flame or active heat source in the world — torches, burning furnaces, lit candles, and more. If it's on fire, it can light a fuse.
+Dynamite can be ignited by right-clicking almost any open flame or active heat source in the world — torches, burning furnaces, lit candles, magma blocks, and more. If it generates heat, or if it's on fire, it can light a fuse.
 
 ---
 
@@ -156,7 +157,7 @@ Pyro has built-in optional support for [LambDynamicLights](https://modrinth.com/
 
 **What it adds:**
 - Lit dynamite in your hand illuminates the area around you at full light level
-- Thrown or landed dynamite continues to cast light until it detonates
+- Thrown, landed, or dropped dynamite continues to cast light until it detonates
 - Makes underground demolition runs dramatically more atmospheric
 
 ---
