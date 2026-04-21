@@ -80,10 +80,11 @@ public class DynamiteItem extends Item {
         // ── IGNITE ────────────────────────────────────────────────────────────
         InteractionHand otherHand = (hand == InteractionHand.MAIN_HAND) ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
         ItemStack otherHandStack = player.getItemInHand(otherHand);
-        boolean hasTorch     = otherHandStack.is(Items.TORCH) || otherHandStack.is(Items.REDSTONE_TORCH)
+        boolean hasTorch      = otherHandStack.is(Items.TORCH) || otherHandStack.is(Items.REDSTONE_TORCH)
                 || otherHandStack.is(Items.SOUL_TORCH) || otherHandStack.is(Items.COPPER_TORCH);
         boolean hasFireCharge = otherHandStack.is(Items.FIRE_CHARGE);
-        if (!hasTorch && !hasFireCharge) return InteractionResult.PASS;
+        boolean hasLavaBucket = otherHandStack.is(Items.LAVA_BUCKET);
+        if (!hasTorch && !hasFireCharge && !hasLavaBucket) return InteractionResult.PASS;
 
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
             SoundEvents.FLINTANDSTEEL_USE, SoundSource.NEUTRAL, 1.0F, 1.0F);
@@ -112,14 +113,15 @@ public class DynamiteItem extends Item {
         BlockState blockState = level.getBlockState(pos);
         Player player = context.getPlayer();
 
-        boolean isCampfire   = blockState.is(BlockTags.CAMPFIRES)
+        boolean isCampfire    = blockState.is(BlockTags.CAMPFIRES)
                 && blockState.getValue(BlockStateProperties.LIT);
-        boolean isHeatSource = isHeatSourceAdjacentOrAt(level, blockState, pos, context.getClickedFace());
-        boolean isFurnace    = isLitFurnace(blockState) && player != null && player.isShiftKeyDown();
+        boolean isHeatSource  = isHeatSourceAdjacentOrAt(level, blockState, pos, context.getClickedFace());
+        boolean isFurnace     = isLitFurnace(blockState) && player != null && player.isShiftKeyDown();
         boolean isCandle      = blockState.is(BlockTags.CANDLES)
                 && blockState.getValue(BlockStateProperties.LIT);
         boolean isPlacedTorch = isAnyPlacedTorch(blockState);
-        if (!isCampfire && !isHeatSource && !isFurnace && !isCandle && !isPlacedTorch) return InteractionResult.PASS;
+        boolean isMagmaBlock  = blockState.is(Blocks.MAGMA_BLOCK);
+        if (!isCampfire && !isHeatSource && !isFurnace && !isCandle && !isPlacedTorch && !isMagmaBlock) return InteractionResult.PASS;
 
         level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
             SoundEvents.FLINTANDSTEEL_USE, SoundSource.NEUTRAL, 1.0F, 1.0F);
@@ -192,6 +194,10 @@ public class DynamiteItem extends Item {
         return (int) Math.max(1, FUSE_TICKS - (currentGameTime - getIgniteTime(stack)));
     }
 
+    public static boolean isFuseExpired(ItemStack stack, long currentGameTime) {
+        return currentGameTime - getIgniteTime(stack) >= FUSE_TICKS;
+    }
+
     private static boolean isAnyPlacedTorch(BlockState state) {
         if (state.is(Blocks.REDSTONE_TORCH) || state.is(Blocks.REDSTONE_WALL_TORCH)) {
             return state.getValue(BlockStateProperties.LIT);
@@ -216,7 +222,7 @@ public class DynamiteItem extends Item {
                 || state.getFluidState().is(FluidTags.LAVA);
     }
 
-    static void clearIgnited(ItemStack stack) {
+    public static void clearIgnited(ItemStack stack) {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         tag.remove(IGNITE_TIME_TAG);
         if (tag.isEmpty()) {
