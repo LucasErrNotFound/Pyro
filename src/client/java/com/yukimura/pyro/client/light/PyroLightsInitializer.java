@@ -2,6 +2,7 @@ package com.yukimura.pyro.client.light;
 
 import com.yukimura.pyro.entity.PyroEntities;
 import com.yukimura.pyro.item.DynamiteItem;
+import net.minecraft.world.entity.item.ItemEntity;
 import dev.lambdaurora.lambdynlights.api.DynamicLightsContext;
 import dev.lambdaurora.lambdynlights.api.DynamicLightsInitializer;
 import dev.lambdaurora.lambdynlights.api.entity.luminance.EntityLuminance;
@@ -35,18 +36,21 @@ public class PyroLightsInitializer implements DynamicLightsInitializer {
                 new IgnitedDynamiteHolderLuminance()
             )
         );
+
+        // Dropped ignited dynamite (ItemEntity on the ground) glows.
+        context.entityLightSourceManager().onRegisterEvent().register(
+            Identifier.fromNamespaceAndPath("pyro", "dropped_ignited_dynamite"),
+            regContext -> regContext.register(
+                EntityType.ITEM,
+                new IgnitedDroppedDynamiteLuminance()
+            )
+        );
     }
 
-    /**
-     * Emits light level 15 when a Player holds an ignited dynamite in their main hand.
-     * Returns 0 for all other entities and for unignited dynamite.
-     */
     private static final class IgnitedDynamiteHolderLuminance implements EntityLuminance {
 
         @Override
         public Type type() {
-            // type() is only used for JSON (de)serialization of data-pack light sources.
-            // For programmatic event-based registration, this is never called at runtime.
             return EntityLuminance.Type.VALUE;
         }
 
@@ -56,6 +60,23 @@ public class PyroLightsInitializer implements DynamicLightsInitializer {
             ItemStack held = player.getMainHandItem();
             if (!(held.getItem() instanceof DynamiteItem)) return 0;
             if (!DynamiteItem.isIgnited(held)) return 0;
+            return 15;
+        }
+    }
+
+    private static final class IgnitedDroppedDynamiteLuminance implements EntityLuminance {
+
+        @Override
+        public Type type() {
+            return EntityLuminance.Type.VALUE;
+        }
+
+        @Override
+        public int getLuminance(ItemLightSourceManager itemLightSourceManager, Entity entity) {
+            if (!(entity instanceof ItemEntity itemEntity)) return 0;
+            ItemStack stack = itemEntity.getItem();
+            if (!(stack.getItem() instanceof DynamiteItem)) return 0;
+            if (!DynamiteItem.isIgnited(stack)) return 0;
             return 15;
         }
     }
