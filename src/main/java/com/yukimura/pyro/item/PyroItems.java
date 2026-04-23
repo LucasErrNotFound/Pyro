@@ -21,6 +21,13 @@ public class PyroItems {
             .stacksTo(16)
     );
 
+    public static final Item CONTACT_DYNAMITE = registerItem(
+        "contact_dynamite",
+        ContactDynamiteItem::new,
+        new Item.Properties()
+            .stacksTo(16)
+    );
+
     public static final Item FUSE = registerItem(
         "fuse",
         FuseItem::new,
@@ -38,6 +45,7 @@ public class PyroItems {
     public static void initialize() {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(itemGroup -> {
             itemGroup.accept(DYNAMITE);
+            itemGroup.accept(CONTACT_DYNAMITE);
             itemGroup.accept(FUSE);
         });
     }
