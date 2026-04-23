@@ -23,6 +23,7 @@ public class PyroClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		EntityRenderers.register(PyroEntities.DYNAMITE_ENTITY, ThrownItemRenderer::new);
+		EntityRenderers.register(PyroEntities.CONTACT_DYNAMITE_ENTITY, ThrownItemRenderer::new);
 		ClientTickEvents.END_CLIENT_TICK.register(PyroClient::onClientTick);
 	}
 

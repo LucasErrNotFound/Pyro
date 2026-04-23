@@ -11,9 +11,12 @@ import net.minecraft.world.entity.Entity;
 
 public class PyroDamageTypes {
 
-    public static final ResourceKey<DamageType> DYNAMITE        = key("dynamite");
-    public static final ResourceKey<DamageType> DYNAMITE_SELF   = key("dynamite_self");
-    public static final ResourceKey<DamageType> DYNAMITE_DIRECT = key("dynamite_direct");
+    public static final ResourceKey<DamageType> DYNAMITE                = key("dynamite");
+    public static final ResourceKey<DamageType> DYNAMITE_SELF           = key("dynamite_self");
+    public static final ResourceKey<DamageType> DYNAMITE_DIRECT         = key("dynamite_direct");
+    public static final ResourceKey<DamageType> CONTACT_DYNAMITE        = key("contact_dynamite");
+    public static final ResourceKey<DamageType> CONTACT_DYNAMITE_SELF   = key("contact_dynamite_self");
+    public static final ResourceKey<DamageType> CONTACT_DYNAMITE_DIRECT = key("contact_dynamite_direct");
 
     private static ResourceKey<DamageType> key(String path) {
         return ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath("pyro", path));
@@ -37,6 +40,21 @@ public class PyroDamageTypes {
     /** Direct projectile impact — the thrown dynamite physically struck the entity. */
     public static DamageSource dynamiteDirect(RegistryAccess registryAccess, Entity directEntity, Entity causingEntity) {
         return new DamageSource(holder(registryAccess, DYNAMITE_DIRECT), directEntity, causingEntity);
+    }
+
+    /** Blast damage from a thrown contact dynamite entity — attributes the kill to the thrower. */
+    public static DamageSource contactDynamite(RegistryAccess registryAccess, Entity directEntity, Entity causingEntity) {
+        return new DamageSource(holder(registryAccess, CONTACT_DYNAMITE), directEntity, causingEntity);
+    }
+
+    /** Self-triggered explosion — the thrower detonated contact dynamite at their own feet. */
+    public static DamageSource contactDynamiteSelf(RegistryAccess registryAccess) {
+        return new DamageSource(holder(registryAccess, CONTACT_DYNAMITE_SELF));
+    }
+
+    /** Direct projectile impact — the thrown contact dynamite physically struck the entity. */
+    public static DamageSource contactDynamiteDirect(RegistryAccess registryAccess, Entity directEntity, Entity causingEntity) {
+        return new DamageSource(holder(registryAccess, CONTACT_DYNAMITE_DIRECT), directEntity, causingEntity);
     }
 
     private static Holder<DamageType> holder(RegistryAccess registryAccess, ResourceKey<DamageType> key) {
