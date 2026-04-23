@@ -28,24 +28,25 @@ public class IgnitedDropMixin {
         if (self.level().isClientSide()) return;
 
         ItemStack stack = self.getItem();
-        if (!stack.is(PyroItems.DYNAMITE) || !DynamiteItem.isIgnited(stack)) return;
+        if (!stack.is(PyroItems.DYNAMITE)) return;
+        long igniteTime = DynamiteItem.getIgniteTimeIfPresent(stack);
+        if (igniteTime == Long.MIN_VALUE) return;
 
         ServerLevel serverLevel = (ServerLevel) self.level();
 
         if (!pyro_clearedRemainingFromDropper) {
             pyro_clearedRemainingFromDropper = true;
-            long droppedIgniteTime = DynamiteItem.getIgniteTime(stack);
             serverLevel.getEntitiesOfClass(Player.class, self.getBoundingBox().inflate(4.0))
                 .forEach(player -> {
                     int inventorySize = player.getInventory().getContainerSize();
                     for (int slotIndex = 0; slotIndex < inventorySize; slotIndex++) {
-                        clearIfMatchingIgnited(player.getInventory().getItem(slotIndex), droppedIgniteTime);
+                        clearIfMatchingIgnited(player.getInventory().getItem(slotIndex), igniteTime);
                     }
-                    clearIfMatchingIgnited(player.getOffhandItem(), droppedIgniteTime);
+                    clearIfMatchingIgnited(player.getOffhandItem(), igniteTime);
                 });
         }
 
-        if (!DynamiteItem.isFuseExpired(stack, serverLevel.getGameTime())) return;
+        if (serverLevel.getGameTime() - igniteTime < DynamiteItem.FUSE_TICKS) return;
 
         int stackCount = stack.getCount();
         float damageRadius = 5.0f * stackCount;
@@ -78,10 +79,8 @@ public class IgnitedDropMixin {
 
     @Unique
     private static void clearIfMatchingIgnited(ItemStack inventoryStack, long igniteTime) {
-        if (inventoryStack.is(PyroItems.DYNAMITE)
-                && DynamiteItem.isIgnited(inventoryStack)
-                && DynamiteItem.getIgniteTime(inventoryStack) == igniteTime) {
-            DynamiteItem.clearIgnited(inventoryStack);
-        }
+        if (!inventoryStack.is(PyroItems.DYNAMITE)) return;
+        if (DynamiteItem.getIgniteTimeIfPresent(inventoryStack) != igniteTime) return;
+        DynamiteItem.clearIgnited(inventoryStack);
     }
 }
