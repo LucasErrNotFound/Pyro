@@ -68,14 +68,6 @@ public class DynamiteEntity extends ThrowableItemProjectile {
         }
     }
 
-    private void spawnFuseParticles() {
-        Level level = level();
-        level.addParticle(ParticleTypes.SMOKE, getX(), getY() + 0.15, getZ(), 0.0, 0.04, 0.0);
-        if (level.getRandom().nextInt(3) == 0) {
-            level.addParticle(ParticleTypes.SMALL_FLAME, getX(), getY() + 0.15, getZ(), 0.0, 0.02, 0.0);
-        }
-    }
-
     @Override
     protected void onHitEntity(EntityHitResult hitResult) {
         super.onHitEntity(hitResult);
@@ -122,5 +114,13 @@ public class DynamiteEntity extends ThrowableItemProjectile {
 
         this.discard();
         level().explode(this, getX(), getY(), getZ(), blastRadius, Level.ExplosionInteraction.BLOCK);
+    }
+
+    private void spawnFuseParticles() {
+        Level level = level();
+        level.addParticle(ParticleTypes.SMOKE, getX(), getY() + 0.3, getZ(), 0.0, 0.04, 0.0);
+        if (level.getRandom().nextInt(3) == 0) {
+            level.addParticle(ParticleTypes.SMALL_FLAME, getX(), getY() + 0.3, getZ(), 0.0, 0.02, 0.0);
+        }
     }
 }
