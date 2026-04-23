@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "dynamite",
+  "pattern": [
+    " X ",
+    "#S#",
+    "RBR"
+  ],
+  "key": {
+    "X": "minecraft:tripwire_hook",
+    "#": "minecraft:gunpowder",
+    "S": "minecraft:sand",
+    "R": "minecraft:red_dye",
+    "B": "minecraft:bamboo"
+  },
+  "result": {
+    "id": "pyro:contact_dynamite",
+    "count": 2
+  }
+}
