@@ -20,7 +20,7 @@
 
 ## Overview
 
-Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruction to survival and adventure play. Throw a stick of dynamite, watch the fuse burn down, and take cover. Every explosion is physics-driven: thrown dynamite lands, sits, and detonates — or goes off in your hand if you wait too long.
+Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruction to survival and adventure play. Throw a stick of dynamite, watch the fuse burn down, and take cover. Every explosion is physics-driven: thrown dynamite lands, sits, and detonates on its own, or goes off in your hand if you wait too long.
 
 ---
 
@@ -32,9 +32,9 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 
 - Ignite dynamite with a torch or at a campfire, then throw it with right-click
 - **4-second fuse** (80 ticks) counts down whether the dynamite is in your hand, mid-air, or lying on the ground
-- Lands on the ground and detonates after the fuse expires — perfect for timed demolitions
-- **Drop it** on the ground and it still detonates when the fuse runs out — dropping clears the ignited state from any remaining dynamite in your hand so only the dropped piece explodes
-- Hold it too long and it **detonates in your inventory** — instant kill for the holder, splash damage to nearby players and mobs
+- Lands on the ground and detonates after the fuse expires, perfect for timed demolitions
+- **Drop it** on the ground and it still detonates when the fuse runs out. Dropping clears the ignited state from any remaining dynamite in your hand so only the dropped piece explodes
+- Hold it too long and it **detonates in your inventory**: instant kill for the holder, splash damage to nearby players and mobs
 - Blast radius of **2.5 blocks** for block destruction; damage reaches out to **5 blocks**, scaling with distance
 
 ---
@@ -43,11 +43,11 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 
 ![Contact Dynamite in action](docs/contact_dynamite.gif)
 
-- No ignition required — **throw it directly** with right-click and it detonates the instant it contacts any block or entity
-- No fuse, no countdown: what leaves your hand explodes on the first thing it touches
+- No ignition required: **throw it directly** with right-click and it detonates the instant it contacts any block or entity
+- No fuse, no countdown. What leaves your hand explodes on the first thing it touches
 - Blast radius of **3 blocks** for block destruction; damage reaches out to **5 blocks**, scaling with distance
-- Up to **15 HP** at point-blank range — survivable on full health, but barely
-- Crafted with a **tripwire hook** instead of a fuse — shares the same sand-and-gunpowder recipe layout as standard dynamite
+- Up to **15 HP** at point-blank range, survivable on full health but barely
+- Crafted with a **tripwire hook** instead of a fuse; shares the same sand-and-gunpowder recipe layout as standard dynamite
 
 ---
 
@@ -58,7 +58,7 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 - Igniting dynamite without throwing it detonates the **entire stack** at once
 - Explosion radius, maximum damage, and number of sub-explosions all **scale with stack size**
 - Each sub-explosion is offset from the others, spreading blast force across a wider area
-- A full stack is far more lethal than a single stick — handle with care
+- A full stack is far more lethal than a single stick, so handle with care
 
 ---
 
@@ -66,19 +66,19 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 
 ![Timed fuse system](docs/timed_fuse_system.gif)
 
-- Unlit dynamite sits safely in your inventory — it will never explode until ignited
+- Unlit dynamite sits safely in your inventory; it will never explode until ignited
 - Once ignited, a **custom lit model** replaces the standard dynamite texture so you always know it's live
 - The fuse timer persists through throws: if 2 seconds burn down in your hand before you throw, only 2 seconds remain in the air
 
 ---
 
-### Dynamic Lights (Optional — LambDynamicLights)
+### Dynamic Lights (Optional)
 
 ![Dynamic lights with lit dynamite](docs/dynamic_lights_dynamite.gif)
 
 - With [LambDynamicLights](https://modrinth.com/mod/lambdynamiclights) installed, ignited dynamite emits **full-brightness dynamic light (level 15)**
 - Light is cast both while held in your hand **and** while the projectile is in flight or resting on the ground
-- Purely visual enhancement — the mod runs without it, but dark corridors become dramatically more tense with it
+- Purely visual enhancement; the mod runs without it, but dark corridors become dramatically more tense with it
 
 ---
 
@@ -103,7 +103,7 @@ Hold dynamite in one hand and **right-click** while holding any of the following
 
 ![Igniting dynamite at a campfire](docs/campfire_dynamite.gif)
 
-Hold dynamite and **right-click a lit campfire** to ignite it. The campfire must be actively burning — a campfire that has been extinguished will not work.
+Hold dynamite and **right-click a lit campfire** to ignite it. The campfire must be actively burning; an extinguished campfire will not work.
 
 ---
 
@@ -111,7 +111,7 @@ Hold dynamite and **right-click a lit campfire** to ignite it. The campfire must
 
 ![Igniting dynamite on fire](docs/fire_dynamite.gif)
 
-Hold dynamite and **right-click directly on a fire block** to ignite it. Click the fire's hitbox itself — clicking the block underneath will not work. Works with both regular fire and soul fire.
+Hold dynamite and **right-click directly on a fire block** to ignite it. Click the fire's hitbox itself, not the block underneath. Works with both regular fire and soul fire.
 
 ---
 
@@ -127,7 +127,7 @@ Hold dynamite and **right-click directly on lava** to ignite it. Both source blo
 
 ![Other ways to ignite dynamite](docs/different_ways_dynamite.png)
 
-Dynamite can be ignited by right-clicking almost any open flame or active heat source in the world — torches, burning furnaces, lit candles, magma blocks, and more. If it generates heat, or if it's on fire, it can light a fuse.
+Dynamite can be ignited by right-clicking almost any open flame or active heat source in the world: torches, burning furnaces, lit candles, magma blocks, and more. If it generates heat or it's on fire, it can light a fuse.
 
 ---
 
@@ -135,7 +135,7 @@ Dynamite can be ignited by right-clicking almost any open flame or active heat s
 
 ### Fuse
 
-> Crafted shapeless — combine **1× Gunpowder** + **1× String** → **3× Fuse**
+> Crafted shapeless: combine **1× Gunpowder** + **1× String** → **3× Fuse**
 
 ![Fuse crafting recipe](docs/fuse-crafting.png)
 
@@ -163,11 +163,11 @@ Yields **2× Contact Dynamite**.
 
 ### TNT
 
-> Shaped recipe (3×3 crafting grid) — **replaces the vanilla TNT recipe**:
+> Shaped recipe (3×3 crafting grid), replacing the vanilla TNT recipe:
 
 ![TNT crafting recipe](docs/tnt-crafting.png)
 
-Fill the entire grid with **9× Dynamite** to craft **1× TNT**. The vanilla gunpowder-and-sand recipe no longer works — TNT is now gated behind Pyro's crafting chain.
+Fill the entire grid with **9× Dynamite** to craft **1× TNT**. The vanilla gunpowder-and-sand recipe no longer works; TNT is now gated behind Pyro's crafting chain.
 
 ---
 
@@ -175,7 +175,7 @@ Fill the entire grid with **9× Dynamite** to craft **1× TNT**. The vanilla gun
 
 ### LambDynamicLights
 
-Pyro has built-in optional support for [LambDynamicLights](https://modrinth.com/mod/lambdynamiclights). No extra configuration is needed — install both mods and dynamic lighting activates automatically.
+Pyro has built-in optional support for [LambDynamicLights](https://modrinth.com/mod/lambdynamiclights). No extra configuration is needed; install both mods and dynamic lighting activates automatically.
 
 **What it adds:**
 - Lit dynamite in your hand illuminates the area around you at full light level
