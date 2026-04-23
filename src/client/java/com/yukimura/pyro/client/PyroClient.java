@@ -66,16 +66,16 @@ public class PyroClient implements ClientModInitializer {
 
 		Vec3 cameraPosition = camera.position();
 		Vector3fc forwardVector = camera.forwardVector();
-		Vector3fc upVector = camera.upVector();
 		Vector3fc leftVector = camera.leftVector();
-		Vec3 forward = new Vec3(forwardVector.x(), forwardVector.y(), forwardVector.z());
-		Vec3 up = new Vec3(upVector.x(), upVector.y(), upVector.z());
-		Vec3 left = new Vec3(leftVector.x(), leftVector.y(), leftVector.z());
 
 		double side = (hand == InteractionHand.MAIN_HAND) ? 0.15 : -0.15;
-		return cameraPosition.add(forward.scale(0.15))
-		                     .add(left.scale(-side))
-		                     .add(up.scale(0.0));
+		double fx = forwardVector.x() * 0.15;
+		double fy = forwardVector.y() * 0.15;
+		double fz = forwardVector.z() * 0.15;
+		double lx = leftVector.x() * (-side);
+		double ly = leftVector.y() * (-side);
+		double lz = leftVector.z() * (-side);
+		return new Vec3(cameraPosition.x + fx + lx, cameraPosition.y + fy + ly, cameraPosition.z + fz + lz);
 	}
 
 	private static Vec3 thirdPersonEstimate(Minecraft minecraft, Player player, InteractionHand hand) {
@@ -83,28 +83,40 @@ public class PyroClient implements ClientModInitializer {
 
 		Vector3fc forwardVector = camera.forwardVector();
 		Vector3fc leftVector = camera.leftVector();
-		Vec3 cameraForward = new Vec3(forwardVector.x(), forwardVector.y(), forwardVector.z());
-		Vec3 cameraLeft = new Vec3(leftVector.x(), leftVector.y(), leftVector.z());
 
-		Vec3 horizontalForward = new Vec3(cameraForward.x, 0.0, cameraForward.z);
-		double horizontalLength = horizontalForward.length();
+		double fx = forwardVector.x();
+		double fz = forwardVector.z();
+		double horizontalLength = Math.sqrt(fx * fx + fz * fz);
+
+		double hfx, hfz;
 		if (horizontalLength < 0.001) {
 			float yawRadians = (float) Math.toRadians(player.yBodyRot);
-			horizontalForward = new Vec3(-Mth.sin(yawRadians), 0.0, Mth.cos(yawRadians));
+			hfx = -Mth.sin(yawRadians);
+			hfz = Mth.cos(yawRadians);
 		} else {
-			horizontalForward = horizontalForward.scale(1.0 / horizontalLength);
+			double inv = 1.0 / horizontalLength;
+			hfx = fx * inv;
+			hfz = fz * inv;
 		}
 
-		boolean isFrontThirdPerson = minecraft.options.getCameraType() == CameraType.THIRD_PERSON_FRONT;
-		if (isFrontThirdPerson) {
-			horizontalForward = horizontalForward.scale(-1.0);
-			cameraLeft = cameraLeft.scale(-1.0);
+		double lx = leftVector.x();
+		double ly = leftVector.y();
+		double lz = leftVector.z();
+
+		if (minecraft.options.getCameraType() == CameraType.THIRD_PERSON_FRONT) {
+			hfx = -hfx;
+			hfz = -hfz;
+			lx = -lx;
+			ly = -ly;
+			lz = -lz;
 		}
 
 		double armSide = (hand == InteractionHand.MAIN_HAND) ? 0.3 : -0.3;
-		return player.position()
-		             .add(0, player.getEyeHeight() * 0.55, 0)
-		             .add(horizontalForward.scale(0.6))
-		             .add(cameraLeft.scale(-armSide));
+		Vec3 position = player.position();
+		return new Vec3(
+			position.x + hfx * 0.6 + lx * (-armSide),
+			position.y + player.getEyeHeight() * 0.55 + ly * (-armSide),
+			position.z + hfz * 0.6 + lz * (-armSide)
+		);
 	}
 }
