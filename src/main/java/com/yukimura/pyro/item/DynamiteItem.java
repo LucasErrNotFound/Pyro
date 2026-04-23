@@ -147,7 +147,7 @@ public class DynamiteItem extends Item {
 
         // ── FUSE EXPIRED: explode at the holder's position ────────────────────
         int stackCount = stack.getCount();
-        float damageRadius = 5.0f * stackCount;
+        float damageRadius = 5.0f + (stackCount - 1) * 0.75f;
         float maxDamage = 15.0f * stackCount;
 
         if (entity instanceof Player holder) {
