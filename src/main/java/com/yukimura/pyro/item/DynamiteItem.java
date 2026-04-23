@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 
 public class DynamiteItem extends Item {
 
-    private static final int FUSE_TICKS = 80;
+    public static final int FUSE_TICKS = 80;
     private static final int THROW_COOLDOWN = 40;
     static final String IGNITE_TIME_TAG = "igniteTime";
 
@@ -140,10 +140,10 @@ public class DynamiteItem extends Item {
     @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
         super.inventoryTick(stack, level, entity, slot);
-        if (!isIgnited(stack)) return;
+        long igniteTime = getIgniteTimeIfPresent(stack);
+        if (igniteTime == Long.MIN_VALUE) return;
 
-        long elapsed = level.getGameTime() - getIgniteTime(stack);
-        if (elapsed < FUSE_TICKS) return;
+        if (level.getGameTime() - igniteTime < FUSE_TICKS) return;
 
         // ── FUSE EXPIRED: explode at the holder's position ────────────────────
         int stackCount = stack.getCount();
@@ -185,9 +185,15 @@ public class DynamiteItem extends Item {
             .copyTag().contains(IGNITE_TIME_TAG);
     }
 
+    public static long getIgniteTimeIfPresent(ItemStack stack) {
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (!tag.contains(IGNITE_TIME_TAG)) return Long.MIN_VALUE;
+        return tag.getLong(IGNITE_TIME_TAG).orElse(Long.MIN_VALUE);
+    }
+
     public static long getIgniteTime(ItemStack stack) {
-        return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-            .copyTag().getLong(IGNITE_TIME_TAG).orElse(0L);
+        long time = getIgniteTimeIfPresent(stack);
+        return time == Long.MIN_VALUE ? 0L : time;
     }
 
     public static int getRemainingTicks(ItemStack stack, long currentGameTime) {
