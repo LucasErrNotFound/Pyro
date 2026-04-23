@@ -39,6 +39,18 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 
 ---
 
+### Contact Dynamite
+
+![Contact Dynamite in action](docs/contact_dynamite.gif)
+
+- No ignition required — **throw it directly** with right-click and it detonates the instant it contacts any block or entity
+- No fuse, no countdown: what leaves your hand explodes on the first thing it touches
+- Blast radius of **3 blocks** for block destruction; damage reaches out to **5 blocks**, scaling with distance
+- Up to **15 HP** at point-blank range — survivable on full health, but barely
+- Crafted with a **tripwire hook** instead of a fuse — shares the same sand-and-gunpowder recipe layout as standard dynamite
+
+---
+
 ### Stack-Scaled Inventory Explosion
 
 ![Stack-scaled inventory explosion](docs/ultimate_explosion.gif)
@@ -136,6 +148,16 @@ Dynamite can be ignited by right-clicking almost any open flame or active heat s
 ![Dynamite crafting recipe](docs/dynamite-crafting.png)
 
 Yields **2× Dynamite**.
+
+---
+
+### Contact Dynamite
+
+> Shaped recipe (3×3 crafting grid):
+
+![Contact Dynamite crafting recipe](docs/contact-dynamite-crafting.png)
+
+Yields **2× Contact Dynamite**.
 
 ---
 
