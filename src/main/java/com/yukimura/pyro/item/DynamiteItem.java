@@ -109,13 +109,13 @@ public class DynamiteItem extends Item {
         if (isIgnited(stack)) return InteractionResult.PASS;
 
         Level level = context.getLevel();
-        BlockPos pos = context.getClickedPos();
-        BlockState blockState = level.getBlockState(pos);
+        BlockPos clickedPosition = context.getClickedPos();
+        BlockState blockState = level.getBlockState(clickedPosition);
         Player player = context.getPlayer();
 
         boolean isCampfire    = blockState.is(BlockTags.CAMPFIRES)
                 && blockState.getValue(BlockStateProperties.LIT);
-        boolean isHeatSource  = isHeatSourceAdjacentOrAt(level, blockState, pos, context.getClickedFace());
+        boolean isHeatSource  = isHeatSourceAdjacentOrAt(level, blockState, clickedPosition, context.getClickedFace());
         boolean isFurnace     = isLitFurnace(blockState) && player != null && player.isShiftKeyDown();
         boolean isCandle      = blockState.is(BlockTags.CANDLES)
                 && blockState.getValue(BlockStateProperties.LIT);
@@ -123,9 +123,9 @@ public class DynamiteItem extends Item {
         boolean isMagmaBlock  = blockState.is(Blocks.MAGMA_BLOCK);
         if (!isCampfire && !isHeatSource && !isFurnace && !isCandle && !isPlacedTorch && !isMagmaBlock) return InteractionResult.PASS;
 
-        level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+        level.playSound(null, clickedPosition.getX(), clickedPosition.getY(), clickedPosition.getZ(),
             SoundEvents.FLINTANDSTEEL_USE, SoundSource.NEUTRAL, 1.0F, 1.0F);
-        level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+        level.playSound(null, clickedPosition.getX(), clickedPosition.getY(), clickedPosition.getZ(),
             SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, 1.0F, 1.0F);
 
         if (level instanceof ServerLevel serverLevel) {
@@ -158,12 +158,12 @@ public class DynamiteItem extends Item {
                 entity instanceof LivingEntity living ? living : null);
         level.getEntitiesOfClass(LivingEntity.class,
             entity.getBoundingBox().inflate(damageRadius)
-        ).forEach(e -> {
-            if (e == entity) return; // holder already killed above
-            double distance = e.distanceTo(entity);
+        ).forEach(nearbyEntity -> {
+            if (nearbyEntity == entity) return; // holder already killed above
+            double distance = nearbyEntity.distanceTo(entity);
             if (distance < damageRadius) {
                 float scaled = (float) (1.0 - distance / damageRadius) * maxDamage;
-                e.hurt(nearbySource, scaled);
+                nearbyEntity.hurt(nearbySource, scaled);
             }
         });
 
@@ -214,9 +214,9 @@ public class DynamiteItem extends Item {
                 && state.getValue(BlockStateProperties.LIT);
     }
 
-    private static boolean isHeatSourceAdjacentOrAt(Level level, BlockState clicked, BlockPos pos, Direction clickedFace) {
+    private static boolean isHeatSourceAdjacentOrAt(Level level, BlockState clicked, BlockPos blockPosition, Direction clickedFace) {
         if (isFireOrLava(clicked)) return true;
-        return level.getBlockState(pos.relative(clickedFace)).getFluidState().is(FluidTags.LAVA);
+        return level.getBlockState(blockPosition.relative(clickedFace)).getFluidState().is(FluidTags.LAVA);
     }
 
     private static boolean isFireOrLava(BlockState state) {

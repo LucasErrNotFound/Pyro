@@ -105,13 +105,13 @@ public class MolotovItem extends Item {
         if (isIgnited(stack)) return InteractionResult.PASS;
 
         Level level = context.getLevel();
-        BlockPos position = context.getClickedPos();
-        BlockState blockState = level.getBlockState(position);
+        BlockPos clickedPosition = context.getClickedPos();
+        BlockState blockState = level.getBlockState(clickedPosition);
         Player player = context.getPlayer();
 
         boolean isCampfire    = blockState.is(BlockTags.CAMPFIRES)
                 && blockState.getValue(BlockStateProperties.LIT);
-        boolean isHeatSource  = isHeatSourceAdjacentOrAt(level, blockState, position, context.getClickedFace());
+        boolean isHeatSource  = isHeatSourceAdjacentOrAt(level, blockState, clickedPosition, context.getClickedFace());
         boolean isFurnace     = isLitFurnace(blockState) && player != null && player.isShiftKeyDown();
         boolean isCandle      = blockState.is(BlockTags.CANDLES)
                 && blockState.getValue(BlockStateProperties.LIT);
@@ -119,9 +119,9 @@ public class MolotovItem extends Item {
         boolean isMagmaBlock  = blockState.is(Blocks.MAGMA_BLOCK);
         if (!isCampfire && !isHeatSource && !isFurnace && !isCandle && !isPlacedTorch && !isMagmaBlock) return InteractionResult.PASS;
 
-        level.playSound(null, position.getX(), position.getY(), position.getZ(),
+        level.playSound(null, clickedPosition.getX(), clickedPosition.getY(), clickedPosition.getZ(),
             SoundEvents.FLINTANDSTEEL_USE, SoundSource.NEUTRAL, 1.0F, 1.0F);
-        level.playSound(null, position.getX(), position.getY(), position.getZ(),
+        level.playSound(null, clickedPosition.getX(), clickedPosition.getY(), clickedPosition.getZ(),
             SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
         if (level instanceof ServerLevel serverLevel) {
