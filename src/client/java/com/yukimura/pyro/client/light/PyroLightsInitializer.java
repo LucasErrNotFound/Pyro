@@ -2,6 +2,7 @@ package com.yukimura.pyro.client.light;
 
 import com.yukimura.pyro.entity.PyroEntities;
 import com.yukimura.pyro.item.DynamiteItem;
+import com.yukimura.pyro.item.MolotovItem;
 import net.minecraft.world.entity.item.ItemEntity;
 import dev.lambdaurora.lambdynlights.api.DynamicLightsContext;
 import dev.lambdaurora.lambdynlights.api.DynamicLightsInitializer;
@@ -45,6 +46,30 @@ public class PyroLightsInitializer implements DynamicLightsInitializer {
                 new IgnitedDroppedDynamiteLuminance()
             )
         );
+
+        // Thrown ignited molotov glows in flight and on the ground.
+        context.entityLightSourceManager().onRegisterEvent().register(
+            Identifier.fromNamespaceAndPath("pyro", "molotov_entity"),
+            regContext -> regContext.register(PyroEntities.MOLOTOV_ENTITY, 15)
+        );
+
+        // Player holding ignited molotov in main hand glows.
+        context.entityLightSourceManager().onRegisterEvent().register(
+            Identifier.fromNamespaceAndPath("pyro", "player_holding_lit_molotov"),
+            regContext -> regContext.register(
+                EntityType.PLAYER,
+                new IgnitedMolotovHolderLuminance()
+            )
+        );
+
+        // Dropped ignited molotov (ItemEntity on the ground) glows.
+        context.entityLightSourceManager().onRegisterEvent().register(
+            Identifier.fromNamespaceAndPath("pyro", "dropped_ignited_molotov"),
+            regContext -> regContext.register(
+                EntityType.ITEM,
+                new IgnitedDroppedMolotovLuminance()
+            )
+        );
     }
 
     private static final class IgnitedDynamiteHolderLuminance implements EntityLuminance {
@@ -77,6 +102,40 @@ public class PyroLightsInitializer implements DynamicLightsInitializer {
             ItemStack stack = itemEntity.getItem();
             if (!(stack.getItem() instanceof DynamiteItem)) return 0;
             if (!DynamiteItem.isIgnited(stack)) return 0;
+            return 15;
+        }
+    }
+
+    private static final class IgnitedMolotovHolderLuminance implements EntityLuminance {
+
+        @Override
+        public Type type() {
+            return EntityLuminance.Type.VALUE;
+        }
+
+        @Override
+        public int getLuminance(ItemLightSourceManager itemLightSourceManager, Entity entity) {
+            if (!(entity instanceof Player player)) return 0;
+            ItemStack held = player.getMainHandItem();
+            if (!(held.getItem() instanceof MolotovItem)) return 0;
+            if (!MolotovItem.isIgnited(held)) return 0;
+            return 15;
+        }
+    }
+
+    private static final class IgnitedDroppedMolotovLuminance implements EntityLuminance {
+
+        @Override
+        public Type type() {
+            return EntityLuminance.Type.VALUE;
+        }
+
+        @Override
+        public int getLuminance(ItemLightSourceManager itemLightSourceManager, Entity entity) {
+            if (!(entity instanceof ItemEntity itemEntity)) return 0;
+            ItemStack stack = itemEntity.getItem();
+            if (!(stack.getItem() instanceof MolotovItem)) return 0;
+            if (!MolotovItem.isIgnited(stack)) return 0;
             return 15;
         }
     }

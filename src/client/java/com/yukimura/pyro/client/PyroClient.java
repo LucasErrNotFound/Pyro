@@ -2,6 +2,7 @@ package com.yukimura.pyro.client;
 
 import com.yukimura.pyro.entity.PyroEntities;
 import com.yukimura.pyro.item.DynamiteItem;
+import com.yukimura.pyro.item.MolotovItem;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Camera;
@@ -24,6 +25,7 @@ public class PyroClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		EntityRenderers.register(PyroEntities.DYNAMITE_ENTITY, ThrownItemRenderer::new);
 		EntityRenderers.register(PyroEntities.CONTACT_DYNAMITE_ENTITY, ThrownItemRenderer::new);
+		EntityRenderers.register(PyroEntities.MOLOTOV_ENTITY, ThrownItemRenderer::new);
 		ClientTickEvents.END_CLIENT_TICK.register(PyroClient::onClientTick);
 	}
 
@@ -42,7 +44,7 @@ public class PyroClient implements ClientModInitializer {
 			boolean firstPerson,
 			Player player, Minecraft minecraft, Level level) {
 
-		if (!DynamiteItem.isIgnited(stack)) return;
+		if (!DynamiteItem.isIgnited(stack) && !MolotovItem.isIgnited(stack)) return;
 
 		Vec3 fusePosition = firstPerson
 				? firstPersonFallback(minecraft, hand)
