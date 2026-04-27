@@ -51,6 +51,18 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 
 ---
 
+### Thrown Molotov
+
+![Thrown Molotov in action](docs/molotov_thrown.gif)
+
+- Ignite with a torch, fire charge, or any heat source, then throw with right-click
+- Shatters on the first block or entity it contacts: no countdown at the moment of impact
+- Direct hit on an entity deals **3 HP** impact damage and ignites the target for **8 seconds**
+- Fire spreads outward from the impact point, starting at **3-5 blocks** and expanding up to **5-8 blocks** over the following ticks
+- **30-second fuse** (600 ticks) persists through the throw: whatever time burned in-hand carries over to the projectile
+
+---
+
 ### Stack-Scaled Inventory Explosion
 
 ![Stack-scaled inventory explosion](docs/ultimate_explosion.gif)
@@ -62,6 +74,17 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 
 ---
 
+### Dropped Molotov
+
+![Dropped Molotov](docs/molotov_dropped.gif)
+
+- Drop an ignited molotov and it lands as a live item with the fuse still ticking
+- **50% chance to shatter on first contact with the ground**: landing is never guaranteed safe, with no warning before it goes
+- If the bottle survives the landing roll, the fuse counts down to zero and the molotov shatters anyway, igniting the area
+- Less predictable than a throw: the instant-shatter risk makes it unreliable as a pure timed delay
+
+---
+
 ### Timed Fuse System
 
 ![Timed fuse system](docs/timed_fuse_system.gif)
@@ -69,6 +92,16 @@ Pyro is a Fabric mod for Minecraft 26.1 that brings hands-on pyrotechnic destruc
 - Unlit dynamite sits safely in your inventory; it will never explode until ignited
 - Once ignited, a **custom lit model** replaces the standard dynamite texture so you always know it's live
 - The fuse timer persists through throws: if 2 seconds burn down in your hand before you throw, only 2 seconds remain in the air
+
+---
+
+### Molotov Hand Explosion
+
+![Molotov hand explosion](docs/molotov_hand_explosion.gif)
+
+- Hold an ignited molotov for the full **30 seconds** without throwing and it shatters in your hands
+- Deals **10 HP** of fire damage to the holder and **ignites them for 5 seconds**
+- Triggers the same fire spread as a normal impact, centered on the holder's position
 
 ---
 
@@ -133,14 +166,6 @@ Dynamite can be ignited by right-clicking almost any open flame or active heat s
 
 ## Crafting Recipes
 
-### Fuse
-
-> Crafted shapeless: combine **1× Gunpowder** + **1× String** → **3× Fuse**
-
-![Fuse crafting recipe](docs/fuse-crafting.png)
-
----
-
 ### Dynamite
 
 > Shaped recipe (3×3 crafting grid):
@@ -161,6 +186,16 @@ Yields **2× Contact Dynamite**.
 
 ---
 
+### Molotov
+
+> Shaped recipe (3×3 crafting grid):
+
+![Molotov crafting recipe](docs/molotov.png)
+
+Yields **1× Molotov**.
+
+---
+
 ### TNT
 
 > Shaped recipe (3×3 crafting grid), replacing the vanilla TNT recipe:
@@ -168,6 +203,30 @@ Yields **2× Contact Dynamite**.
 ![TNT crafting recipe](docs/tnt-crafting.png)
 
 Fill the entire grid with **9× Dynamite** to craft **1× TNT**. The vanilla gunpowder-and-sand recipe no longer works; TNT is now gated behind Pyro's crafting chain.
+
+---
+
+### Fuse
+
+> Crafted shapeless: combine **1× Gunpowder** + **1× String** → **3× Fuse**
+
+![Fuse crafting recipe](docs/fuse-crafting.png)
+
+---
+
+### Spool of White Thread
+
+> Shaped recipe (3×3 crafting grid): surround **1× Stick** with **8× White Wool** → **2× Spool of White Thread**
+
+![Spool of White Thread crafting recipe](docs/loom-of-white-thread.png)
+
+---
+
+### White Fabric
+
+> Shaped recipe: arrange **4× Spool of White Thread** in a 2×2 block → **4× White Fabric**
+
+![White Fabric crafting recipe](docs/white-fabric.png)
 
 ---
 
