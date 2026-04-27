@@ -4,6 +4,7 @@ import com.yukimura.pyro.damage.PyroDamageTypes;
 import com.yukimura.pyro.entity.DynamiteEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -78,6 +79,7 @@ public class DynamiteItem extends Item {
         }
 
         // ── IGNITE ────────────────────────────────────────────────────────────
+        if (player.isUnderWater()) return InteractionResult.PASS;
         InteractionHand otherHand = (hand == InteractionHand.MAIN_HAND) ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
         ItemStack otherHandStack = player.getItemInHand(otherHand);
         boolean hasTorch      = otherHandStack.is(Items.TORCH) || otherHandStack.is(Items.REDSTONE_TORCH)
@@ -108,10 +110,12 @@ public class DynamiteItem extends Item {
         ItemStack stack = context.getItemInHand();
         if (isIgnited(stack)) return InteractionResult.PASS;
 
+        Player player = context.getPlayer();
+        if (player != null && player.isUnderWater()) return InteractionResult.PASS;
+
         Level level = context.getLevel();
         BlockPos clickedPosition = context.getClickedPos();
         BlockState blockState = level.getBlockState(clickedPosition);
-        Player player = context.getPlayer();
 
         boolean isCampfire    = blockState.is(BlockTags.CAMPFIRES)
                 && blockState.getValue(BlockStateProperties.LIT);
@@ -142,6 +146,13 @@ public class DynamiteItem extends Item {
         super.inventoryTick(stack, level, entity, slot);
         long igniteTime = getIgniteTimeIfPresent(stack);
         if (igniteTime == Long.MIN_VALUE) return;
+
+        if (entity.isUnderWater()) {
+            clearIgnited(stack);
+            level.sendParticles(ParticleTypes.BUBBLE, entity.getX(), entity.getEyeY(), entity.getZ(), 8, 0.2, 0.2, 0.2, 0.05);
+            level.sendParticles(ParticleTypes.SPLASH, entity.getX(), entity.getEyeY(), entity.getZ(), 4, 0.2, 0.0, 0.2, 0.1);
+            return;
+        }
 
         if (level.getGameTime() - igniteTime < FUSE_TICKS) return;
 
