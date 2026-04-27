@@ -5,6 +5,8 @@ import com.yukimura.pyro.item.DynamiteItem;
 import com.yukimura.pyro.item.PyroItems;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -51,7 +53,12 @@ public class IgnitedDropMixin {
                 });
         }
 
-        if (serverLevel.getGameTime() - igniteTime < DynamiteItem.FUSE_TICKS) return;
+        long elapsed = serverLevel.getGameTime() - igniteTime;
+        if (elapsed > 0 && elapsed % 80 == 0) {
+            serverLevel.playSound(null, self.getX(), self.getY(), self.getZ(),
+                SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 0.4F, 1.0F);
+        }
+        if (elapsed < DynamiteItem.FUSE_TICKS) return;
 
         int stackCount = stack.getCount();
         float damageRadius = 5.0f + (stackCount - 1) * 0.75f;

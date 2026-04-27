@@ -5,6 +5,8 @@ import com.yukimura.pyro.item.MolotovItem;
 import com.yukimura.pyro.item.PyroItems;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -44,7 +46,12 @@ public class IgnitedMolotovDropMixin {
             }
         }
 
-        if (serverLevel.getGameTime() - igniteTime < MolotovItem.FUSE_TICKS) return;
+        long elapsed = serverLevel.getGameTime() - igniteTime;
+        if (elapsed > 0 && elapsed % 80 == 0) {
+            serverLevel.playSound(null, self.getX(), self.getY(), self.getZ(),
+                SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 0.4F, 1.0F);
+        }
+        if (elapsed < MolotovItem.FUSE_TICKS) return;
 
         pyro_triggerExplosion(self, serverLevel, stack);
     }
