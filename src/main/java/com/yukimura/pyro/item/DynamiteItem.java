@@ -200,10 +200,6 @@ public class DynamiteItem extends Item {
         return (int) Math.max(1, FUSE_TICKS - (currentGameTime - getIgniteTime(stack)));
     }
 
-    public static boolean isFuseExpired(ItemStack stack, long currentGameTime) {
-        return currentGameTime - getIgniteTime(stack) >= FUSE_TICKS;
-    }
-
     private static boolean isAnyPlacedTorch(BlockState state) {
         if (state.is(Blocks.REDSTONE_TORCH) || state.is(Blocks.REDSTONE_WALL_TORCH)) {
             return state.getValue(BlockStateProperties.LIT);
