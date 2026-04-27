@@ -153,8 +153,10 @@ public class MolotovItem extends Item {
             holder.igniteForSeconds(5.0F);
         }
 
-        int radius = 5 + level.getRandom().nextInt(4);
-        MolotovEntity.spreadFire(level, BlockPos.containing(entity.getX(), entity.getY(), entity.getZ()), radius);
+        MolotovEntity ghostEntity = new MolotovEntity(
+            level, entity.getX(), entity.getY(), entity.getZ(), stack);
+        level.addFreshEntity(ghostEntity);
+        ghostEntity.triggerImpact();
 
         stack.setCount(0);
     }
@@ -212,9 +214,9 @@ public class MolotovItem extends Item {
                 && state.getValue(BlockStateProperties.LIT);
     }
 
-    private static boolean isHeatSourceAdjacentOrAt(Level level, BlockState clicked, BlockPos position, Direction clickedFace) {
+    private static boolean isHeatSourceAdjacentOrAt(Level level, BlockState clicked, BlockPos blockPosition, Direction clickedFace) {
         if (isFireOrLava(clicked)) return true;
-        return level.getBlockState(position.relative(clickedFace)).getFluidState().is(FluidTags.LAVA);
+        return level.getBlockState(blockPosition.relative(clickedFace)).getFluidState().is(FluidTags.LAVA);
     }
 
     private static boolean isFireOrLava(BlockState state) {

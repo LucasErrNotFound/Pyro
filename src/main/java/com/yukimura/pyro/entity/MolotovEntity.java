@@ -119,7 +119,7 @@ public class MolotovEntity extends ThrowableItemProjectile {
 
         if (!level().isClientSide()) {
             fireSpreadInitialRadius = 3 + level().getRandom().nextInt(3); // 3–5 blocks initial
-            fireSpreadMaxRadius = 8 + level().getRandom().nextInt(8);     // 8–15 blocks max
+            fireSpreadMaxRadius = 5 + level().getRandom().nextInt(4);     // 5–8 blocks max
             spreadFire((ServerLevel) level(), BlockPos.containing(getX(), getY(), getZ()), fireSpreadInitialRadius);
 
             level().playSound(null, getX(), getY(), getZ(),
