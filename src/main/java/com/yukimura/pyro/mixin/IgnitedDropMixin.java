@@ -35,7 +35,7 @@ public class IgnitedDropMixin {
         if (igniteTime == Long.MIN_VALUE) return;
 
         if (self.level().isClientSide()) {
-            pyro_spawnFuseParticles(self);
+            if (!self.isInWater()) pyro_spawnFuseParticles(self);
             return;
         }
 
@@ -51,6 +51,15 @@ public class IgnitedDropMixin {
                     }
                     clearIfMatchingIgnited(player.getOffhandItem(), igniteTime);
                 });
+        }
+
+        if (self.isInWater()) {
+            serverLevel.sendParticles(ParticleTypes.BUBBLE, self.getX(), self.getY(), self.getZ(), 8, 0.2, 0.2, 0.2, 0.05);
+            serverLevel.sendParticles(ParticleTypes.SPLASH, self.getX(), self.getY(), self.getZ(), 6, 0.2, 0.0, 0.2, 0.1);
+            ItemStack unignited = stack.copy();
+            DynamiteItem.clearIgnited(unignited);
+            self.setItem(unignited);
+            return;
         }
 
         long elapsed = serverLevel.getGameTime() - igniteTime;

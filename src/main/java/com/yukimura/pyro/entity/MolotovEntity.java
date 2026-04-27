@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -78,8 +79,17 @@ public class MolotovEntity extends ThrowableItemProjectile {
         }
 
         if (level().isClientSide()) {
-            spawnFuseParticles();
+            if (!isInWater()) spawnFuseParticles();
         } else {
+            if (isInWater()) {
+                ServerLevel serverLevel = (ServerLevel) level();
+                serverLevel.sendParticles(ParticleTypes.BUBBLE, getX(), getY(), getZ(), 12, 0.3, 0.3, 0.3, 0.05);
+                serverLevel.sendParticles(ParticleTypes.SPLASH, getX(), getY(), getZ(), 8, 0.2, 0.0, 0.2, 0.1);
+                ItemEntity droppedItem = new ItemEntity(level(), getX(), getY(), getZ(), new ItemStack(PyroItems.MOLOTOV));
+                level().addFreshEntity(droppedItem);
+                discard();
+                return;
+            }
             if (--fuseTicks <= 0) {
                 triggerImpact();
             }

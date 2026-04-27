@@ -7,8 +7,10 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -62,8 +64,17 @@ public class DynamiteEntity extends ThrowableItemProjectile {
         // After super.tick() may apply gravity; re-zero velocity if already stuck
         if (inGround) setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
         if (level().isClientSide()) {
-            spawnFuseParticles();
+            if (!isInWater()) spawnFuseParticles();
         } else {
+            if (isInWater()) {
+                ServerLevel serverLevel = (ServerLevel) level();
+                serverLevel.sendParticles(ParticleTypes.BUBBLE, getX(), getY(), getZ(), 12, 0.3, 0.3, 0.3, 0.05);
+                serverLevel.sendParticles(ParticleTypes.SPLASH, getX(), getY(), getZ(), 8, 0.2, 0.0, 0.2, 0.1);
+                ItemEntity droppedItem = new ItemEntity(level(), getX(), getY(), getZ(), new ItemStack(PyroItems.DYNAMITE));
+                level().addFreshEntity(droppedItem);
+                discard();
+                return;
+            }
             if (--fuseTicks <= 0) explodeWithReducedDamage();
         }
     }
