@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "#/#",
+    "###"
+  ],
+  "key": {
+    "#": "minecraft:white_wool",
+    "/": "minecraft:stick"
+  },
+  "result": {
+    "id": "pyro:spool_of_white_thread",
+    "count": 2
+  }
+}

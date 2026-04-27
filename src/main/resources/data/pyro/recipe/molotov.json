@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "#F#",
+    ".#."
+  ],
+  "key": {
+    "X": "pyro:fabric_white",
+    "#": "minecraft:glass",
+    "F": "minecraft:fire_charge",
+    ".": "minecraft:gunpowder"
+  },
+  "group": "spool",
+  "result": {
+    "id": "pyro:molotov",
+    "count": 1
+  }
+}

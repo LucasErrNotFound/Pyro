@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "## ",
+    "## "
+  ],
+  "key": {
+    "#": "pyro:spool_of_white_thread"
+  },
+  "result": {
+    "id": "pyro:fabric_white",
+    "count": 4
+  }
+}

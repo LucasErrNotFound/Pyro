@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_spool_of_white_thread": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "pyro:spool_of_white_thread"}]
+      }
+    }
+  },
+  "requirements": [["has_spool_of_white_thread"]],
+  "rewards": {
+    "recipes": ["pyro:fabric_white"]
+  }
+}

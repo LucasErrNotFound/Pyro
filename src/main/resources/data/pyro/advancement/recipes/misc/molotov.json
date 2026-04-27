@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_gunpowder": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "minecraft:gunpowder"}]
+      }
+    },
+    "has_glass": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "minecraft:glass"}]
+      }
+    },
+    "has_fabric_white": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "pyro:fabric_white"}]
+      }
+    },
+    "has_fire_charge": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "minecraft:fire_charge"}]
+      }
+    }
+  },
+  "requirements": [["has_gunpowder", "has_glass", "has_fire_charge", "has_fabric_white"]],
+  "rewards": {
+    "recipes": ["pyro:molotov"]
+  }
+}

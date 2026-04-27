@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_white_wool": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "minecraft:white_wool"}]
+      }
+    },
+    "has_stick": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "minecraft:stick"}]
+      }
+    }
+  },
+  "requirements": [["has_white_wool", "has_stick"]],
+  "rewards": {
+    "recipes": ["pyro:spool_of_white_thread"]
+  }
+}
