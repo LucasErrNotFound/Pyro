@@ -1,0 +1,202 @@
+package com.yukimura.pyro.entity;
+
+import com.yukimura.pyro.damage.PyroDamageTypes;
+import com.yukimura.pyro.item.MolotovItem;
+import com.yukimura.pyro.item.PyroItems;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+
+public class MolotovEntity extends ThrowableItemProjectile {
+
+    private static final int FUSE_TICKS = 600;
+    private static final byte EVENT_IMPACT = 12;
+    private int fuseTicks = FUSE_TICKS;
+
+    private boolean hasImpacted = false;
+    private int fireSpreadTick = 0;
+    private int fireSpreadInitialRadius = 4;
+    private int fireSpreadMaxRadius = 12;
+
+    private boolean clientHasImpacted = false;
+    private int clientSpreadTick = 0;
+
+    public MolotovEntity(EntityType<? extends MolotovEntity> type, Level level) {
+        super(type, level);
+    }
+
+    public MolotovEntity(Level level, LivingEntity owner, ItemStack stack) {
+        super(PyroEntities.MOLOTOV_ENTITY, owner, level, stack);
+        if (MolotovItem.isIgnited(stack)) {
+            this.fuseTicks = MolotovItem.getRemainingTicks(stack, level.getGameTime());
+        }
+    }
+
+    public MolotovEntity(Level level, double x, double y, double z, ItemStack stack) {
+        super(PyroEntities.MOLOTOV_ENTITY, x, y, z, level, stack);
+    }
+
+    @Override
+    protected Item getDefaultItem() {
+        return PyroItems.MOLOTOV;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (hasImpacted) {
+            setDeltaMovement(Vec3.ZERO);
+            if (!level().isClientSide()) {
+                fireSpreadTick++;
+                int currentRadius = Math.min(fireSpreadInitialRadius + fireSpreadTick, fireSpreadMaxRadius);
+                spreadFire((ServerLevel) level(), BlockPos.containing(getX(), getY(), getZ()), currentRadius);
+                if (currentRadius >= fireSpreadMaxRadius) {
+                    discard();
+                }
+            } else {
+                if (clientHasImpacted) {
+                    clientSpreadTick++;
+                    spawnSpreadParticles();
+                }
+            }
+            return;
+        }
+
+        if (level().isClientSide()) {
+            spawnFuseParticles();
+        } else {
+            if (--fuseTicks <= 0) {
+                triggerImpact();
+            }
+        }
+    }
+
+    @Override
+    protected void onHitEntity(EntityHitResult hitResult) {
+        super.onHitEntity(hitResult);
+        if (!level().isClientSide() && hitResult.getEntity() instanceof LivingEntity target) {
+            target.hurt(PyroDamageTypes.molotovDirect(level().registryAccess(), this, this.getOwner()), 3.0f);
+            target.igniteForSeconds(8.0F);
+        }
+    }
+
+    @Override
+    protected void onHit(HitResult hitResult) {
+        super.onHit(hitResult);
+        triggerImpact();
+    }
+
+    @Override
+    public void handleEntityEvent(byte id) {
+        if (id == EVENT_IMPACT) {
+            clientHasImpacted = true;
+            clientSpreadTick = 0;
+            spawnImpactParticles();
+        } else {
+            super.handleEntityEvent(id);
+        }
+    }
+
+    public void triggerImpact() {
+        if (hasImpacted) return;
+        hasImpacted = true;
+        setDeltaMovement(Vec3.ZERO);
+
+        if (!level().isClientSide()) {
+            fireSpreadInitialRadius = 3 + level().getRandom().nextInt(3); // 3–5 blocks initial
+            fireSpreadMaxRadius = 8 + level().getRandom().nextInt(8);     // 8–15 blocks max
+            spreadFire((ServerLevel) level(), BlockPos.containing(getX(), getY(), getZ()), fireSpreadInitialRadius);
+
+            level().playSound(null, getX(), getY(), getZ(),
+                SoundEvents.SPLASH_POTION_BREAK, SoundSource.NEUTRAL,
+                1.0F, level().getRandom().nextFloat() * 0.1F + 0.9F);
+            level().playSound(null, getX(), getY(), getZ(),
+                SoundEvents.GLASS_BREAK, SoundSource.NEUTRAL,
+                1.0F, level().getRandom().nextFloat() * 0.1F + 0.9F);
+
+            level().broadcastEntityEvent(this, EVENT_IMPACT);
+        }
+    }
+
+    private void spawnFuseParticles() {
+        Level level = level();
+        level.addParticle(ParticleTypes.SMOKE, getX(), getY() + 0.3, getZ(), 0.0, 0.04, 0.0);
+        if (level.getRandom().nextInt(3) == 0) {
+            level.addParticle(ParticleTypes.SMALL_FLAME, getX(), getY() + 0.3, getZ(), 0.0, 0.02, 0.0);
+        }
+    }
+
+    private void spawnImpactParticles() {
+        Level level = level();
+        RandomSource random = level.getRandom();
+        double baseX = getX();
+        double baseY = getY() + 0.2;
+        double baseZ = getZ();
+
+        // FLAME particles radiating outward fast
+        for (int i = 0; i < 32; i++) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            double speed = 0.3 + random.nextDouble() * 0.4;
+            level.addParticle(ParticleTypes.FLAME, baseX, baseY, baseZ,
+                Math.cos(angle) * speed, 0.1 + random.nextDouble() * 0.2, Math.sin(angle) * speed);
+        }
+
+        // LAVA spark particles (orange sparks flying up from impact)
+        for (int i = 0; i < 12; i++) {
+            level.addParticle(ParticleTypes.LAVA, baseX, baseY, baseZ, 0.0, 0.0, 0.0);
+        }
+    }
+
+    private void spawnSpreadParticles() {
+        Level level = level();
+        RandomSource random = level.getRandom();
+        double baseX = getX();
+        double baseY = getY() + 0.2;
+        double baseZ = getZ();
+        double expansionSpeed = 0.1 + 0.04 * clientSpreadTick;
+
+        // FLAME particles radiating outward with growing speed (expanding ring)
+        for (int i = 0; i < 6; i++) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            double speed = expansionSpeed + random.nextDouble() * 0.15;
+            level.addParticle(ParticleTypes.FLAME, baseX, baseY, baseZ,
+                Math.cos(angle) * speed, 0.05 + random.nextDouble() * 0.1, Math.sin(angle) * speed);
+        }
+    }
+
+    public static void spreadFire(ServerLevel level, BlockPos center, int radius) {
+        RandomSource random = level.getRandom();
+        int attempts = radius * radius * 2;
+
+        for (int i = 0; i < attempts; i++) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            double distance = random.nextDouble() * radius;
+            int dx = (int)(Math.cos(angle) * distance);
+            int dz = (int)(Math.sin(angle) * distance);
+
+            for (int dy = 2; dy >= -4; dy--) {
+                BlockPos firePos = center.offset(dx, dy, dz);
+                BlockState stateBelow = level.getBlockState(firePos.below());
+                if (level.isEmptyBlock(firePos) && !stateBelow.isAir()) {
+                    level.setBlock(firePos, BaseFireBlock.getState(level, firePos), 3);
+                    break;
+                }
+            }
+        }
+    }
+}

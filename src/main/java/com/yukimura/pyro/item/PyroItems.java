@@ -28,10 +28,32 @@ public class PyroItems {
             .stacksTo(16)
     );
 
+    public static final Item MOLOTOV = registerItem(
+        "molotov",
+        MolotovItem::new,
+        new Item.Properties()
+            .stacksTo(1)
+    );
+
     public static final Item FUSE = registerItem(
         "fuse",
         FuseItem::new,
         new Item.Properties()
+            .stacksTo(64)
+    );
+
+    public static final Item FABRIC = registerItem(
+        "fabric_white",
+        FabricItem::new,
+        new Item.Properties()
+            .stacksTo(64)
+    );
+
+    public static final Item SPOOL_OF_WHITE_THREAD = registerItem(
+        "spool_of_white_thread",
+        WhiteThreadItem::new,
+        new Item.Properties()
+            .stacksTo(16)
     );
 
     public static <T extends Item> T registerItem(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings) {
@@ -46,7 +68,10 @@ public class PyroItems {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(itemGroup -> {
             itemGroup.accept(DYNAMITE);
             itemGroup.accept(CONTACT_DYNAMITE);
+            itemGroup.accept(MOLOTOV);
             itemGroup.accept(FUSE);
+            itemGroup.accept(FABRIC);
+            itemGroup.accept(SPOOL_OF_WHITE_THREAD);
         });
     }
 }

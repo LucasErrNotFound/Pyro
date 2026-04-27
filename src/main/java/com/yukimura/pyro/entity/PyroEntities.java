@@ -24,6 +24,12 @@ public class PyroEntities {
             .sized(0.25f, 0.25f)
     );
 
+    public static final EntityType<MolotovEntity> MOLOTOV_ENTITY = registerEntity(
+        "molotov",
+        EntityType.Builder.<MolotovEntity>of(MolotovEntity::new, MobCategory.MISC)
+            .sized(0.25f, 0.25f)
+    );
+
     private static <T extends Entity> EntityType<T> registerEntity(String name, EntityType.Builder<T> builder) {
         ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Pyro.MOD_ID, name));
         return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
