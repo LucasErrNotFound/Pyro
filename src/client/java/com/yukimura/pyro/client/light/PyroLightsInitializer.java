@@ -21,11 +21,17 @@ public class PyroLightsInitializer implements DynamicLightsInitializer {
 
     @Override
     public void onInitializeDynamicLights(DynamicLightsContext context) {
-        // Thrown ignited dynamite glows in flight and on the ground.
-        // DynamiteEntity is only ever spawned from an already-ignited item, so always return 15.
+        // Thrown ignited dynamite glows in flight and on the ground; suppressed when submerged.
         context.entityLightSourceManager().onRegisterEvent().register(
             Identifier.fromNamespaceAndPath("pyro", "dynamite_entity"),
-            regContext -> regContext.register(PyroEntities.DYNAMITE_ENTITY, 15)
+            regContext -> regContext.register(PyroEntities.DYNAMITE_ENTITY, new EntityLuminance() {
+                @Override
+                public Type type() { return EntityLuminance.Type.VALUE; }
+                @Override
+                public int getLuminance(ItemLightSourceManager manager, Entity entity) {
+                    return entity.isUnderWater() ? 0 : 15;
+                }
+            })
         );
 
         // Player holding ignited dynamite in main hand glows.
@@ -50,7 +56,14 @@ public class PyroLightsInitializer implements DynamicLightsInitializer {
         // Thrown ignited molotov glows in flight and on the ground.
         context.entityLightSourceManager().onRegisterEvent().register(
             Identifier.fromNamespaceAndPath("pyro", "molotov_entity"),
-            regContext -> regContext.register(PyroEntities.MOLOTOV_ENTITY, 15)
+            regContext -> regContext.register(PyroEntities.MOLOTOV_ENTITY, new EntityLuminance() {
+                @Override
+                public Type type() { return EntityLuminance.Type.VALUE; }
+                @Override
+                public int getLuminance(ItemLightSourceManager manager, Entity entity) {
+                    return entity.isUnderWater() ? 0 : 15;
+                }
+            })
         );
 
         // Player holding ignited molotov in main hand glows.
@@ -85,6 +98,7 @@ public class PyroLightsInitializer implements DynamicLightsInitializer {
             ItemStack held = player.getMainHandItem();
             if (!(held.getItem() instanceof DynamiteItem)) return 0;
             if (!DynamiteItem.isIgnited(held)) return 0;
+            if (player.isUnderWater()) return 0;
             return 15;
         }
     }
@@ -102,6 +116,7 @@ public class PyroLightsInitializer implements DynamicLightsInitializer {
             ItemStack stack = itemEntity.getItem();
             if (!(stack.getItem() instanceof DynamiteItem)) return 0;
             if (!DynamiteItem.isIgnited(stack)) return 0;
+            if (itemEntity.isUnderWater()) return 0;
             return 15;
         }
     }
@@ -119,6 +134,7 @@ public class PyroLightsInitializer implements DynamicLightsInitializer {
             ItemStack held = player.getMainHandItem();
             if (!(held.getItem() instanceof MolotovItem)) return 0;
             if (!MolotovItem.isIgnited(held)) return 0;
+            if (player.isUnderWater()) return 0;
             return 15;
         }
     }
@@ -136,6 +152,7 @@ public class PyroLightsInitializer implements DynamicLightsInitializer {
             ItemStack stack = itemEntity.getItem();
             if (!(stack.getItem() instanceof MolotovItem)) return 0;
             if (!MolotovItem.isIgnited(stack)) return 0;
+            if (itemEntity.isUnderWater()) return 0;
             return 15;
         }
     }
