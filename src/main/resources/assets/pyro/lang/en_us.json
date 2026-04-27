@@ -1,10 +1,17 @@
 {
   "item.pyro.dynamite": "Dynamite",
   "item.pyro.contact_dynamite": "Contact Dynamite",
+  "item.pyro.molotov": "Molotov",
   "item.pyro.fuse": "Fuse",
+  "item.pyro.fabric_white": "White Fabric",
+  "item.pyro.spool_of_white_thread": "Spool of White Thread",
+
   "tooltip.pyro.dynamite": "Right-click with a torch to ignite.",
   "tooltip.pyro.contact_dynamite": "Explodes on impact.",
+  "tooltip.pyro.molotov": "Throwable firebomb that ignites on impact.",
   "tooltip.pyro.fuse": "A slow-burning cord used to ignite explosives.",
+  "tooltip.pyro.fabric_white": "Flammable cloth used to craft Molotov cocktails.",
+  "tooltip.pyro.spool_of_white_thread": "Used to loom a fabric.",
 
   "death.attack.pyro.dynamite": "%1$s was blown up by some dynamite",
   "death.attack.pyro.dynamite.player": "%1$s was blown up by %2$s's dynamite",
@@ -16,5 +23,11 @@
   "death.attack.pyro.contact_dynamite.player": "%1$s was blown up by %2$s's contact dynamite",
   "death.attack.pyro.contact_dynamite_self": "%1$s threw contact dynamite at their own feet",
   "death.attack.pyro.contact_dynamite_direct": "%1$s was struck by a flying stick of contact dynamite",
-  "death.attack.pyro.contact_dynamite_direct.player": "%1$s was struck by %2$s's thrown contact dynamite"
+  "death.attack.pyro.contact_dynamite_direct.player": "%1$s was struck by %2$s's thrown contact dynamite",
+
+  "death.attack.pyro.molotov": "%1$s was set ablaze by a molotov",
+  "death.attack.pyro.molotov.player": "%1$s was set ablaze by %2$s's molotov",
+  "death.attack.pyro.molotov_self": "%1$s held onto the molotov for too long",
+  "death.attack.pyro.molotov_direct": "%1$s was struck by a flying molotov",
+  "death.attack.pyro.molotov_direct.player": "%1$s was struck by %2$s's thrown molotov"
 }

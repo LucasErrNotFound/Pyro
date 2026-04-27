@@ -18,6 +18,10 @@ public class PyroDamageTypes {
     public static final ResourceKey<DamageType> CONTACT_DYNAMITE_SELF   = key("contact_dynamite_self");
     public static final ResourceKey<DamageType> CONTACT_DYNAMITE_DIRECT = key("contact_dynamite_direct");
 
+    public static final ResourceKey<DamageType> MOLOTOV        = key("molotov");
+    public static final ResourceKey<DamageType> MOLOTOV_SELF   = key("molotov_self");
+    public static final ResourceKey<DamageType> MOLOTOV_DIRECT = key("molotov_direct");
+
     private static ResourceKey<DamageType> key(String path) {
         return ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath("pyro", path));
     }
@@ -55,6 +59,26 @@ public class PyroDamageTypes {
     /** Direct projectile impact — the thrown contact dynamite physically struck the entity. */
     public static DamageSource contactDynamiteDirect(RegistryAccess registryAccess, Entity directEntity, Entity causingEntity) {
         return new DamageSource(holder(registryAccess, CONTACT_DYNAMITE_DIRECT), directEntity, causingEntity);
+    }
+
+    /** Fire damage from a thrown molotov entity — attributes the kill to the thrower. */
+    public static DamageSource molotov(RegistryAccess registryAccess, Entity directEntity, Entity causingEntity) {
+        return new DamageSource(holder(registryAccess, MOLOTOV), directEntity, causingEntity);
+    }
+
+    /** Inventory self-ignition — the holder held the molotov for too long. */
+    public static DamageSource molotovSelf(RegistryAccess registryAccess) {
+        return new DamageSource(holder(registryAccess, MOLOTOV_SELF));
+    }
+
+    /** Fire damage from an inventory self-ignition — attributes the kill to the holder. */
+    public static DamageSource molotovHolder(RegistryAccess registryAccess, Entity causingEntity) {
+        return new DamageSource(holder(registryAccess, MOLOTOV), null, causingEntity);
+    }
+
+    /** Direct projectile impact — the thrown molotov physically struck the entity. */
+    public static DamageSource molotovDirect(RegistryAccess registryAccess, Entity directEntity, Entity causingEntity) {
+        return new DamageSource(holder(registryAccess, MOLOTOV_DIRECT), directEntity, causingEntity);
     }
 
     private static Holder<DamageType> holder(RegistryAccess registryAccess, ResourceKey<DamageType> key) {
