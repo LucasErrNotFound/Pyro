@@ -3,6 +3,7 @@ package com.yukimura.pyro.mixin;
 import com.yukimura.pyro.entity.MolotovEntity;
 import com.yukimura.pyro.item.MolotovItem;
 import com.yukimura.pyro.item.PyroItems;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -10,6 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,6 +24,9 @@ public class IgnitedMolotovDropMixin {
     @Unique
     private boolean pyro_molotovCrackRollDone = false;
 
+    @Unique
+    private boolean pyro_unignitedCrackRollDone = false;
+
     @Inject(method = "tick", at = @At("TAIL"))
     private void tickIgnitedMolotov(CallbackInfo callbackInfo) {
         ItemEntity self = (ItemEntity)(Object)this;
@@ -29,7 +34,20 @@ public class IgnitedMolotovDropMixin {
         ItemStack stack = self.getItem();
         if (!stack.is(PyroItems.MOLOTOV)) return;
         long igniteTime = MolotovItem.getIgniteTimeIfPresent(stack);
-        if (igniteTime == Long.MIN_VALUE) return;
+
+        if (igniteTime == Long.MIN_VALUE) {
+            if (!pyro_unignitedCrackRollDone && (self.onGround() || self.horizontalCollision)) {
+                pyro_unignitedCrackRollDone = true;
+                if (!self.level().isClientSide()) {
+                    ServerLevel serverLevel = (ServerLevel) self.level();
+                    if (serverLevel.getRandom().nextBoolean()) {
+                        pyro_shatterUnignited(self, serverLevel);
+                        return;
+                    }
+                }
+            }
+            return;
+        }
 
         if (self.level().isClientSide()) {
             if (!self.isInWater()) pyro_spawnFuseParticles(self);
@@ -38,7 +56,7 @@ public class IgnitedMolotovDropMixin {
 
         ServerLevel serverLevel = (ServerLevel) self.level();
 
-        if (!pyro_molotovCrackRollDone && self.onGround()) {
+        if (!pyro_molotovCrackRollDone && (self.onGround() || self.horizontalCollision)) {
             pyro_molotovCrackRollDone = true;
             if (serverLevel.getRandom().nextBoolean()) {
                 pyro_triggerExplosion(self, serverLevel, stack);
@@ -86,5 +104,25 @@ public class IgnitedMolotovDropMixin {
         if (level.getRandom().nextInt(3) == 0) {
             level.addParticle(ParticleTypes.SMALL_FLAME, entity.getX(), entity.getY() + 0.6, entity.getZ(), 0.0, 0.02, 0.0);
         }
+    }
+
+    @Unique
+    private static void pyro_shatterUnignited(ItemEntity itemEntity, ServerLevel serverLevel) {
+        serverLevel.playSound(null, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(),
+            SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
+        serverLevel.sendParticles(
+            new BlockParticleOption(ParticleTypes.BLOCK, Blocks.GLASS.defaultBlockState()),
+            itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(),
+            12, 0.15, 0.15, 0.15, 0.05
+        );
+        ItemEntity fabricDrop = new ItemEntity(
+            serverLevel,
+            itemEntity.getX(),
+            itemEntity.getY(),
+            itemEntity.getZ(),
+            new ItemStack(PyroItems.FABRIC)
+        );
+        serverLevel.addFreshEntity(fabricDrop);
+        itemEntity.discard();
     }
 }
