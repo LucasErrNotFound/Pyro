@@ -15,12 +15,14 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 public class MolotovEntity extends ThrowableItemProjectile {
 
@@ -154,38 +156,45 @@ public class MolotovEntity extends ThrowableItemProjectile {
     private void spawnImpactParticles() {
         Level level = level();
         RandomSource random = level.getRandom();
-        double baseX = getX();
-        double baseY = getY() + 0.2;
-        double baseZ = getZ();
+        Vec3 origin = new Vec3(getX(), getY() + 0.2, getZ());
 
-        // FLAME particles radiating outward fast
         for (int i = 0; i < 32; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
             double speed = 0.3 + random.nextDouble() * 0.4;
-            level.addParticle(ParticleTypes.FLAME, baseX, baseY, baseZ,
-                Math.cos(angle) * speed, 0.1 + random.nextDouble() * 0.2, Math.sin(angle) * speed);
+            double velocityX = Math.cos(angle) * speed;
+            double velocityY = 0.1 + random.nextDouble() * 0.2;
+            double velocityZ = Math.sin(angle) * speed;
+            Vec3 targetPosition = origin.add(new Vec3(velocityX, velocityY, velocityZ).normalize().scale(3.0));
+            HitResult lineOfSightResult = level.clip(new ClipContext(
+                origin, targetPosition, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()
+            ));
+            if (lineOfSightResult.getType() == HitResult.Type.BLOCK) continue;
+            level.addParticle(ParticleTypes.FLAME, origin.x, origin.y, origin.z, velocityX, velocityY, velocityZ);
         }
 
-        // LAVA spark particles (orange sparks flying up from impact)
         for (int i = 0; i < 12; i++) {
-            level.addParticle(ParticleTypes.LAVA, baseX, baseY, baseZ, 0.0, 0.0, 0.0);
+            level.addParticle(ParticleTypes.LAVA, origin.x, origin.y, origin.z, 0.0, 0.0, 0.0);
         }
     }
 
     private void spawnSpreadParticles() {
         Level level = level();
         RandomSource random = level.getRandom();
-        double baseX = getX();
-        double baseY = getY() + 0.2;
-        double baseZ = getZ();
         double expansionSpeed = 0.1 + 0.04 * clientSpreadTick;
+        Vec3 origin = new Vec3(getX(), getY() + 0.2, getZ());
 
-        // FLAME particles radiating outward with growing speed (expanding ring)
         for (int i = 0; i < 6; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
             double speed = expansionSpeed + random.nextDouble() * 0.15;
-            level.addParticle(ParticleTypes.FLAME, baseX, baseY, baseZ,
-                Math.cos(angle) * speed, 0.05 + random.nextDouble() * 0.1, Math.sin(angle) * speed);
+            double velocityX = Math.cos(angle) * speed;
+            double velocityY = 0.05 + random.nextDouble() * 0.1;
+            double velocityZ = Math.sin(angle) * speed;
+            Vec3 targetPosition = origin.add(new Vec3(velocityX, velocityY, velocityZ).normalize().scale(3.0));
+            HitResult lineOfSightResult = level.clip(new ClipContext(
+                origin, targetPosition, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()
+            ));
+            if (lineOfSightResult.getType() == HitResult.Type.BLOCK) continue;
+            level.addParticle(ParticleTypes.FLAME, origin.x, origin.y, origin.z, velocityX, velocityY, velocityZ);
         }
     }
 
@@ -196,14 +205,23 @@ public class MolotovEntity extends ThrowableItemProjectile {
         for (int i = 0; i < attempts; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
             double distance = random.nextDouble() * radius;
-            int dx = (int)(Math.cos(angle) * distance);
-            int dz = (int)(Math.sin(angle) * distance);
+            int xOffset = (int)(Math.cos(angle) * distance);
+            int zOffset = (int)(Math.sin(angle) * distance);
 
-            for (int dy = 2; dy >= -4; dy--) {
-                BlockPos firePos = center.offset(dx, dy, dz);
-                BlockState stateBelow = level.getBlockState(firePos.below());
-                if (level.isEmptyBlock(firePos) && !stateBelow.isAir()) {
-                    level.setBlock(firePos, BaseFireBlock.getState(level, firePos), 3);
+            for (int yOffset = 2; yOffset >= -4; yOffset--) {
+                BlockPos firePosition = center.offset(xOffset, yOffset, zOffset);
+                BlockState stateBelow = level.getBlockState(firePosition.below());
+                if (level.isEmptyBlock(firePosition) && !stateBelow.isAir()) {
+                    HitResult lineOfSightResult = level.clip(new ClipContext(
+                        Vec3.atCenterOf(center),
+                        Vec3.atCenterOf(firePosition),
+                        ClipContext.Block.COLLIDER,
+                        ClipContext.Fluid.NONE,
+                        CollisionContext.empty()
+                    ));
+                    if (lineOfSightResult.getType() == HitResult.Type.MISS) {
+                        level.setBlock(firePosition, BaseFireBlock.getState(level, firePosition), 3);
+                    }
                     break;
                 }
             }
